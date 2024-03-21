@@ -1,0 +1,74 @@
+/* styles for index.html */
+#choose-file {
+    height: 0;  
+    width: 0;
+    overflow: hidden;
+  }
+
+  #choose-file {
+  position: absolute;
+  left: -9999px;
+}
+
+.wrapper {
+  background-color: #ffffffb2;
+}
+
+body {
+  background-color: #F8F8F8;
+}
+
+body {
+    font-family: Arial, sans-serif;
+}
+
+/* .tabs {
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+}
+
+.tab {
+    float: left;
+}
+
+.tab a {
+    display: block;
+    color: black;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.tab a:hover {
+    background-color: #ddd;
+}
+
+.tabcontent {
+    display: none;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-top: none;
+} */
+
+ /* Styles for tab navigation */
+  .tab {
+    display: none;
+  }
+  .tab.active {
+    display: block;
+  }
+  .tab-navigation {
+    display: flex;
+  }
+  .tab-navigation button {
+    padding: 10px 20px;
+    margin: 0;
+    border: none;
+    background-color: #f0f0f0;
+    cursor: pointer;
+  }
+  .tab-navigation button.active {
+    background-color: #ccc;
+  }
