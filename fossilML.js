@@ -99,6 +99,13 @@ async function handleFileInput(inputId) {
   myClassifier
     .train(whileTraining)
     .then((results) => {
+      const trainingMessageContainer =
+        document.getElementById("trainingMessage");
+      trainingMessageContainer.innerHTML = `
+                <div class="alert alert-success" role="alert">
+                    Training complete! Check the Performance tab for how the model did.
+                </div> `;
+
       console.log("Training results:", results);
       const epoch = results.epoch;
       console.log("Training epoch 1:", epoch);
@@ -134,11 +141,15 @@ async function handleFileInput(inputId) {
     });
 }
 
-
 async function whileTraining() {
   console.log("model is training");
 
-
+  // Display "Model is training" message
+  const trainingMessageContainer = document.getElementById("trainingMessage");
+  trainingMessageContainer.innerHTML = `
+        <div class="alert alert-info" role="alert">
+            Model is training...
+        </div>`;
 }
 
 // logic for classifying images
@@ -205,4 +216,3 @@ function classify() {
     }
   }
 }
-
