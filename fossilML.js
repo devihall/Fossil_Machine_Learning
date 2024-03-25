@@ -1,4 +1,5 @@
-////////////////////////////////////////
+////////// logic for tabbed navigation
+
 function openTab(tabName) {
   // Hide all tabs
   var tabs = document.getElementsByClassName("tab");
@@ -21,26 +22,8 @@ function openTab(tabName) {
     .classList.add("active");
 }
 
-// logic for tabbed navigation
-// function openTab(evt, tabName) {
-//   var i, tabcontent, tablinks;
-//   tabcontent = document.getElementsByClassName("tabcontent");
-//   for (i = 0; i < tabcontent.length; i++) {
-//     tabcontent[i].style.display = "none";
-//   }
-//   tablinks = document.getElementsByClassName("tab");
-//   for (i = 0; i < tablinks.length; i++) {
-//     tablinks[i].className = tablinks[i].className.replace(" active", "");
-//   }
-//   document.getElementById(tabName).style.display = "block";
-//   evt.currentTarget.className += " active";
-// }
-
-// // Display the home tab by default
-// document.getElementById("home").style.display = "block";
-
 ////////////////////////////////////
-// // logic for model training
+//// logic for model training
 
 // Initialize the MobileNet model
 let myimages = [];
@@ -48,6 +31,12 @@ let img;
 let currentIndex = 0;
 let allImages = [];
 let predictions = [];
+// Initialize an array to store loss values
+let lossData = [];
+let trainingResults;
+let loss;
+let epoch;
+let surface;
 
 const myfeatureExtractor = ml5.featureExtractor("MobileNet", modelReady);
 const myClassifier = myfeatureExtractor.classification();
@@ -105,23 +94,54 @@ async function handleFileInput(inputId) {
     );
   }
   await Promise.all(promises);
-  myClassifier.train(whileTraining);
-  console.log(
-    "myClassifier.train(whileTraining)",
-    myClassifier.train(whileTraining)
-  );
+
+  //////////////// logic for model training
+  myClassifier
+    .train(whileTraining)
+    .then((results) => {
+      console.log("Training results:", results);
+      const epoch = results.epoch;
+      console.log("Training epoch 1:", epoch);
+      const loss = results.history.loss;
+      console.log("Training loss:", loss);
+
+      //////////////// logic for model visualization
+      const lossDataForVisualization = epoch.map((epochValue, index) => ({
+        x: epochValue, // Epoch becomes x value
+        y: loss[index], // Loss becomes y value
+      }));
+
+      // data structure for tfvis.render.linechart
+      const data = {
+        values: [lossDataForVisualization],
+        series: ["Loss vs Epoch"],
+      };
+
+      // Get the container HTMLElement with id "demo"
+      const container = document.getElementById("demo");
+
+      // Additional options for labeling x and y axes
+      const options = {
+        xLabel: "Epoch", // Label for x-axis
+        yLabel: "Loss", // Label for y-axis
+      };
+
+      // Render the line chart
+      tfvis.render.linechart(container, data, options);
+    })
+    .catch((error) => {
+      console.error("Error during training:", error);
+    });
 }
 
-// Function for printing loss
-async function whileTraining(loss) {
-  if (loss == null) {
-    console.log("no loss");
-  } else {
-    console.log(loss);
-  }
+
+async function whileTraining() {
+  console.log("model is training");
+
+
 }
 
-// logic for test image
+// logic for classifying images
 ///////////////////////////////////
 function readURL(input) {
   console.log("choose image clicked");
@@ -185,3 +205,4 @@ function classify() {
     }
   }
 }
+

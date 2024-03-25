@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Random File Selector</title>
+</head>
+<body>
+  <h1>Random File Selector</h1>
+  <!-- File upload button -->
+  <input type="file" id="fileInput" multiple>
+  <br>
+  <!-- Select 3 random files button -->
+  <button onclick="selectThreeRandomFiles()">Select 3 Random Files</button>
+  <p id="randomFiles"></p>
+
+  <script>
+    function selectThreeRandomFiles() {
+      var fileInput = document.getElementById('fileInput');
+      var files = fileInput.files;
+      
+      if (files.length < 3) {
+        alert("Please select at least three files.");
+        return;
+      }
+
+      // Extract file names from FileList object
+      var fileNames = [];
+      for (var i = 0; i < files.length; i++) {
+        fileNames.push(files[i].name);
+      }
+
+      // Shuffle the file names array
+      fileNames.sort(() => Math.random() - 0.5);
+
+      // Select the first three shuffled file names
+      var selectedFiles = fileNames.slice(0, 3);
+
+      // Display the selected file names
+      document.getElementById('randomFiles').textContent = 'Randomly selected files: ' + selectedFiles.join(', ');
+    }
+  </script>
+</body>
+</html>
