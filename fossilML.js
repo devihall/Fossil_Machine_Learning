@@ -48,7 +48,7 @@ function modelReady() {
   console.log("Model is ready");
 }
 
-// Function to handle training files input
+// Function to handle training image files input
 async function handleFileInput(inputId) {
   const input = document.getElementById(inputId);
   console.log("input", input);
@@ -62,7 +62,28 @@ async function handleFileInput(inputId) {
   const h4TextContent = document.getElementById(
     "category" + inputId[inputId.length - 1]
   ).textContent;
+  console.log("<<<h4TextContent>>>", h4TextContent);
 
+  const numFiles = input.files.length;
+  if (numFiles < 2) {
+    // Show bootstrap alert
+    const alertElement = document.createElement("div");
+    // Show bootstrap alert
+    alertElement.classList.add("alert", "alert-danger");
+    alertElement.textContent = "Please select two or more files";
+
+    // Append the alert to the trainingMessage div
+    const trainingMessageDiv = document.getElementById("trainingMessage");
+    trainingMessageDiv.appendChild(alertElement);
+
+    // Remove the alert after a delay
+    setTimeout(() => {
+      alertElement.remove();
+    }, 5000); // Remove after 5 seconds (adjust as needed)
+    return; // Exit the function
+  }
+
+  // Continue with handling files if more than one file is selected
   for (let i = 0; i < input.files.length; i++) {
     console.log("input.files", input.files);
 
