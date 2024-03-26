@@ -16,41 +16,28 @@
 
 body {
   background-color: #F8F8F8;
+    padding: 30px;
+
 }
 
 body {
     font-family: Arial, sans-serif;
 }
 
-/* .tabs {
-    overflow: hidden;
-    border: 1px solid #ccc;
-    background-color: #f1f1f1;
+/* styles for file input buttons-model training tab */
+input {
+  margin-top: 1rem;
 }
 
-.tab {
-    float: left;
+input::file-selector-button {
+  font-weight: bold;
+  color: white;
+  padding: 0.5em;
+  border: thin solid dodgerblue;
+  border-radius: 3px;
+  background:dodgerblue;
 }
 
-.tab a {
-    display: block;
-    color: black;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-    transition: 0.3s;
-}
-
-.tab a:hover {
-    background-color: #ddd;
-}
-
-.tabcontent {
-    display: none;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-top: none;
-} */
 
  /* Styles for tab navigation */
   .tab {
@@ -66,9 +53,18 @@ body {
     padding: 10px 20px;
     margin: 0;
     border: none;
-    background-color: #f0f0f0;
+    background-color: #bad5f2;
     cursor: pointer;
+
+    border-top-left-radius: 25px;
+    border-top-right-radius: 25px;
+  width: 200px;
+  
   }
   .tab-navigation button.active {
+    background-color: #c7ede2;
+    border:solid black;
+  }
+  .tab-navigation button:hover {
     background-color: #ccc;
   }

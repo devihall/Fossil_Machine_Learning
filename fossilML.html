@@ -12,28 +12,6 @@
     <link rel="stylesheet" href="fossilML.css">
 
 
-<style>
-  /* Styles for tab navigation
-  .tab {
-    display: none;
-  }
-  .tab.active {
-    display: block;
-  }
-  .tab-navigation {
-    display: flex;
-  }
-  .tab-navigation button {
-    padding: 10px 20px;
-    margin: 0;
-    border: none;
-    background-color: #f0f0f0;
-    cursor: pointer;
-  }
-  .tab-navigation button.active {
-    background-color: #ccc;
-  } */
-</style>
 </head>
 <body>
 
@@ -43,13 +21,13 @@
   <button class="tab-button" onclick="openTab('performance')">Performance</button>
 </div>
 
+<!-- content for Model Training Tab -->
 <div id="training" class="tab active">
   <h2>Model Training</h2>
   <p>Upload training images</p>
     
   <div id="home" class="tabcontent mt-3">
     <div id="trainingMessage"></div>
-
 
   <div class="row">
     <div class="col border p-3 wrapper">
@@ -66,43 +44,42 @@
                 <div class="p-2 mt-3" style="width: 300px;" id="result"></div>
             </div>
 
-            <div class="col border p-3 wrapper">
+  <div class="col border p-3 wrapper">
                 <h4 class="category" id="category3" class="d-flex ">Hemipristis serra</h4>
                 <input type="file" id="file-input3" multiple accept="image/*" onchange="handleFileInput('file-input3')">
                 <div id="thumbnailContainer3"></div>
                 <div class="p-2 mt-3" style="width: 300px;" id="result"></div>
             </div>
 
-            <div class="col border p-3 wrapper">
+  <div class="col border p-3 wrapper">
                 <h4 class="category" id="category4" class="d-flex ">Category 4: Shark species</h4>
                 <input type="file" id="file-input4" multiple accept="image/*" onchange="handleFileInput('file-input4')">
                 <div id="thumbnailContainer4"></div>
                 <div class="p-2 mt-3" style="width: 300px;" id="result"></div>
             </div>
 
-            <div class="col border p-3 wrapper">
+  <div class="col border p-3 wrapper">
                 <h4 class="category" id="category5" class="d-flex ">Category 5: Shark species</h4>
                 <input type="file" id="file-input5" multiple accept="image/*" onchange="handleFileInput('file-input5')">
                 <div id="thumbnailContainer5"></div>
                 <div class="p-2 mt-3" style="width: 300px;" id="result"></div>
             </div>
 
-            <div class="col border p-3 wrapper">
+  <div class="col border p-3 wrapper">
                 <h4 class="category" id="category6" class="d-flex ">Category 6: Shark species</h4>
                 <input type="file" id="file-input6" multiple accept="image/*" onchange="handleFileInput('file-input6')">
                 <div id="thumbnailContainer6"></div>
                 <div class="p-2 mt-3" style="width: 300px;" id="result"></div>
             </div>
-   
   </div>
 </div>
 
 </div>
 
+<!-- content for Image Classification Tab -->
 <div id="classification" class="tab">
   <h2>Image Classification</h2>
   <p>Upload an image for classification</p>
-
 
   <div class="container mt-3 p-2 d-flex justify-content-center">
         <div class="row">
@@ -121,9 +98,9 @@
         </div>
     </div>
     <div class="p-2 mt-3" style="width: 300px;" id="result"></div>
-
 </div>
 
+<!-- content for Model Performance Tab -->
 <div id="performance" class="tab">
   <h2>Model Performance & Monitoring</h2>
   <p>Model performance visualization.</p>
@@ -131,7 +108,6 @@
 <div id="demo"></div>
 
 </div>
-
 
 
 <!-- jQuery-logic for styling -->
