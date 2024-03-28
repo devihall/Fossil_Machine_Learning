@@ -198,51 +198,43 @@ function classify() {
   console.log("classify button clicked");
   $("#classify").prop("disabled", true);
 
-  let img;
+  const element = $("#result");
+  element.html("Detecting...").addClass("border");
 
-  const element = document.getElementById("result");
-  console.log("element", element);
-
-    element.innerHTML = ""; // Clear the inner HTML
-
-
-  element.innerHTML = "Detecting...";
-  console.log("element.innerHTML", element.innerHTML);
-
-  $("#result").addClass("border");
+  // Clear the content of the result div
+  element.empty();
 
   // Initialize Image Classifier with MobileNet.
-  img = document.getElementById("image");
-  console.log("test image", img);
+  const img = document.getElementById("image");
   myClassifier.classify(img, gotResult);
-  console.log(
-    "myClassifier.classify(img, gotResult)",
-    myClassifier.classify(img, gotResult)
-  );
 
   // Move the #result div below the "Choose Image" and "Classify" button
-  const resultContainer = document.querySelector(".buttonList");
-  resultContainer.parentNode.insertBefore(element, resultContainer.nextSibling);
+  const resultContainer = $(".buttonList");
+  const existingElement = $(".result-container");
+  if (existingElement.length === 0) {
+    resultContainer.after(
+      '<div class="result-container p-2 mt-3" style="width: 300px;"></div>'
+    );
+  }
+  resultContainer.parent().find(".result-container").html(element);
 
   // Function to run when results arrive
   function gotResult(error, results) {
     console.log("in gotResult function");
     if (error) {
       console.log(error);
-      // element.innerHTML = error;
-      element.innerHTML = "Classifier not ready";
-
-  
+      element.html(error);
     } else {
       console.log(results);
 
       let num = results[0].confidence * 100;
-      element.innerHTML =
+      element.html(
         "<h5>" +
-        results[0].label +
-        "</h5> Confidence: <b>" +
-        num.toFixed(2) +
-        "%</b>";
+          results[0].label +
+          "</h5> Confidence: <b>" +
+          num.toFixed(2) +
+          "%</b>"
+      );
     }
   }
 }
