@@ -1,9 +1,10 @@
-1) classifier element needs to clear before printing another result
+DONE 1) classifier element needs to clear before printing another result
 2)file randomizer functionality
 3)need more model monitoring Graphs
 4)need to show shortened file names under the thumbnails
 5)need to do grid format for thumbnails
 6)maybe make thumbnails a bit smaller
 7) maybe add shark sihouhette icons to each species
-8) add to my personal github(old)
+DONE 8) add to my personal github(old)
 9)finish setting up project on github
+10)

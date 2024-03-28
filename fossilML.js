@@ -103,14 +103,14 @@ async function handleFileInput(inputId) {
     thumbnailContainer.appendChild(thumbnailDiv);
 
     // add uploaded images to myimages array
-    myimages.push(img);
+    // myimages.push(img);
 
     // Use the h4TextContent as the category
     let category = h4TextContent.trim();
     console.log("category", category);
 
     console.log("IMG", img)
-    
+    // add training images to model
     promises.push(myClassifier.addImage(img, category));
     console.log(
       "myClassifier.addImage(img, category)",
@@ -120,11 +120,13 @@ async function handleFileInput(inputId) {
   await Promise.all(promises);
 
   //////////////// logic for model training
+  // train the model
   myClassifier
     .train(whileTraining)
     .then((results) => {
       const trainingMessageContainer =
         document.getElementById("trainingMessage");
+        // print "training completed" message to the screen
       trainingMessageContainer.innerHTML = `
                 <div class="alert alert-success" role="alert">
                     Training complete! Check the Performance tab for how the model did.
@@ -237,7 +239,7 @@ function classify() {
       }, 3000); // Remove after 5 seconds (adjust as needed
     } else {
       console.log(results);
-
+      // print label and confidence to screen
       let num = results[0].confidence * 100;
       element.html(
         "<h5>" +
