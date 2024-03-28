@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Getting Started with ml5.js</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://unpkg.com/ml5@0.5.0/dist/ml5.min.js"></script>
+<!-- <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script> -->
+  
+</head>
+
+  <body>
+    <!-- images to train the classifier -->
+    <img src="../images/ammonite1.jpg" class="ammonite" />
+    <img src="../images/ammonite2.jpg" class="ammonite" />
+    <img src="../images/ammonite3.jpeg" class="ammonite" />
+    <img src="../images/ammonite4.jpeg" class="ammonite" />
+   
+
+    <img src="../images/sharktooth1.png" class="sharktooth" />
+    <img src="../images/sharktooth2.png" class="sharktooth" />
+    <img src="../images/sharktooth3.png" class="sharktooth" />
+    <img src="../images/sharktooth4.png" class="sharktooth" />
+    
+
+    <img src="../images/testammo.jpeg" id="catam" />
+    <img src="../images/shtest.png" id="catshk" />
+    <script>
+      let classifier
+
+      const featureExtractor = ml5.featureExtractor("MobileNet", modelLoaded)
+
+      // Once the model is loaded
+      async function modelLoaded() {
+        console.log("Model Loaded!")
+
+       classifier = featureExtractor.classification()
+
+        // Array to hold image elements and their labels
+        const images = [];
+
+        // Select all image elements with class "longboard" and "skateboard"
+        const imageElements = document.querySelectorAll('.ammonite, .sharktooth');
+
+        // Iterate over the image elements and populate the array
+        imageElements.forEach(img => {
+          const label = img.classList.contains('ammonite') ? 'ammonite' : 'sharktooth';
+          images.push({ element: img, label: label });
+        });
+
+        // Retrain the network using a for loop
+        for (let i = 0; i < images.length; i++) {
+          const img = images[i].element;
+          const label = images[i].label;
+          classifier.addImage(img, label);
+
+          console.log(classifier.addImage(img, label))
+        }
+        
+        // // Call imagesLoaded once all images are added
+        // imagesLoaded();
+
+         await classifier.train(lossValue => {
+          console.log("Loss is", lossValue)
+          if (lossValue == null) {
+            trainFinished()
+          }
+           })
+      }
+
+      // Function that will be called once the images are loaded
+      // It trains the model with the new categories
+    //  async function imagesLoaded() {
+        // console.log("do train", classifier.hasAnyTrainedClass)
+
+        // train argument is a callback that has as argument the current lossValue.
+        // When lossValue is null, it means the training is finished
+        // await classifier.train(lossValue => {
+        //   console.log("Loss is", lossValue)
+        //   if (lossValue == null) {
+        //     trainFinished()
+        //   }
+        // })
+    //   }
+
+      // Called once the classifier is trained with the new classes
+      function trainFinished() {
+        // Get a prediction for that image
+        console.log("train finished")
+
+        // Examples to test the classifier
+        classifier.classify(
+          document.getElementById("catam"),
+          (err, result) => {
+            console.log("is ammonite?", result, result[0].label) // Should output 'ammonite'
+          }
+        )
+        classifier.classify(
+          document.getElementById("catshk"),
+          (err, result) => {
+            console.log("is sharktooth?", result, result[0].label) // Should output 'sharktooth'
+          }
+        )
+        // Saves two files model.json and model.weights.bin
+        classifier.save()
+        // This is the signal to tell puppeteer we are done with the
+        done = document.getElementById("done").style.display = "block"
+      }
+    </script>
+    <p id="done" style="display: none;">Done!</p>
+  </body>
+</html>

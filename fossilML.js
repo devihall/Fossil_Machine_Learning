@@ -108,6 +108,9 @@ async function handleFileInput(inputId) {
     // Use the h4TextContent as the category
     let category = h4TextContent.trim();
     console.log("category", category);
+
+    console.log("IMG", img)
+    
     promises.push(myClassifier.addImage(img, category));
     console.log(
       "myClassifier.addImage(img, category)",
@@ -200,6 +203,9 @@ function classify() {
   const element = document.getElementById("result");
   console.log("element", element);
 
+    element.innerHTML = ""; // Clear the inner HTML
+
+
   element.innerHTML = "Detecting...";
   console.log("element.innerHTML", element.innerHTML);
 
@@ -223,7 +229,10 @@ function classify() {
     console.log("in gotResult function");
     if (error) {
       console.log(error);
-      element.innerHTML = error;
+      // element.innerHTML = error;
+      element.innerHTML = "Classifier not ready";
+
+  
     } else {
       console.log(results);
 

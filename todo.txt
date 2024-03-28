@@ -1,0 +1,7 @@
+1) classifier element needs to clear before printing another result
+2)file randomizer functionality
+3)need more model monitoring Graphs
+4)need to show shortened file names under the thumbnails
+5)need to do grid format for thumbnails
+6)maybe make thumbnails a bit smaller
+7) maybe add shark sihouhette icons to each species
