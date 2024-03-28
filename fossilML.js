@@ -223,7 +223,18 @@ function classify() {
     console.log("in gotResult function");
     if (error) {
       console.log(error);
-      element.html(error);
+      const errorMessage = $(
+        "<div class='alert alert-danger alert-dismissible fade show' role='alert'>" +
+          "Train the model before using the classifier" +
+          "<button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>" +
+          "</div>"
+      );
+      $("#classifierMessage").append(errorMessage);
+      element.html("classifier not ready!");
+      setTimeout(() => {
+        errorMessage.remove();
+        element.remove();
+      }, 3000); // Remove after 5 seconds (adjust as needed
     } else {
       console.log(results);
 
