@@ -5,3 +5,5 @@
 5)need to do grid format for thumbnails
 6)maybe make thumbnails a bit smaller
 7) maybe add shark sihouhette icons to each species
+8) add to my personal github(old)
+9)finish setting up project on github
