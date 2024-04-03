@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI Shark Tooth Machine Learning Model</title>
 <!-- Include Bootstrap CSS -->
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css" integrity="sha512-SbiR/eusphKoMVVXysTKG/7VseWii+Y3FdHrt0EpKgpToZeemhqHeZeLWLhJutz/2ut2Vw1uQEj2MbRF+TVBUA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css" integrity="sha512-SbiR/eusphKoMVVXysTKG/7VseWii+Y3FdHrt0EpKgpToZeemhqHeZeLWLhJutz/2ut2Vw1uQEj2MbRF+TVBUA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap-grid.min.css" integrity="sha512-JQksK36WdRekVrvdxNyV3B0Q1huqbTkIQNbz1dlcFVgNynEMRl0F8OSqOGdVppLUDIvsOejhr/W5L3G/b3J+8w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js" integrity="sha512-i9cEfJwUwViEPFKdC1enz4ZRGBj8YQo6QByFTF92YXHi7waCqyexvRD75S5NVTsSiTv7rKWqG9Y5eFxmRsOn0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js" integrity="sha512-i9cEfJwUwViEPFKdC1enz4ZRGBj8YQo6QByFTF92YXHi7waCqyexvRD75S5NVTsSiTv7rKWqG9Y5eFxmRsOn0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <!-- <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-vis@1.5.1/dist/tfjs-vis.umd.min.js"></script> -->
     <link rel="stylesheet" href="fossilML.css">
 
@@ -24,55 +24,32 @@
 <!-- content for Model Training Tab -->
 <div id="training" class="tab active">
   <h2>Model Training</h2>
-  <p>Upload training images</p>
+  <div class="d-flex justify-content-between align-items-center">
+    <p>Upload training images</p>
+    <div>
+      <button class="btn btn-warning mr-4" onclick="resetModel()">
+          Reset
+      </button>
+      <button class="btn btn-primary" onclick="trainModel()">
+          Start Training
+      </button>
+    </div>
+  </div>
+  
+
     
   <div id="home" class="tabcontent mt-3">
     <div id="trainingMessage"></div>
+    <input type="file" id="jsonFileInput" accept=".json" style="display: none" onchange="addJsonFile()">
+    <button class="btn btn-success" onclick="document.getElementById('jsonFileInput').click()">Add JSON File</button>
 
-  <div class="row">
-    <div class="col border p-3 wrapper">
-      <!--  -->
-                <h4 class="category" id="category1" class="d-flex ">Galeocerdo cuvier</h4>
-                <input type="file" id="file-input1" multiple accept="image/*" onchange="handleFileInput('file-input1')">
-                <div id="thumbnailContainer1"></div>
-                <div class="p-2 mt-3" style="width: 300px;" id="result"></div>
-            </div>
-
-   <div class="col border p-3 wrapper">
-                <h4 class="category" id="category2" class="d-flex ">Carcharodon carcharias</h4>
-                <input type="file" id="file-input2" multiple accept="image/*" onchange="handleFileInput('file-input2')">
-                <div id="thumbnailContainer2"></div>
-                <div class="p-2 mt-3" style="width: 300px;" id="result"></div>
-            </div>
-
-  <div class="col border p-3 wrapper">
-                <h4 class="category" id="category3" class="d-flex ">Hemipristis serra</h4>
-                <input type="file" id="file-input3" multiple accept="image/*" onchange="handleFileInput('file-input3')">
-                <div id="thumbnailContainer3"></div>
-                <div class="p-2 mt-3" style="width: 300px;" id="result"></div>
-            </div>
-
-  <div class="col border p-3 wrapper">
-                <h4 class="category" id="category4" class="d-flex ">Carcharhinus leucas</h4>
-                <input type="file" id="file-input4" multiple accept="image/*" onchange="handleFileInput('file-input4')">
-                <div id="thumbnailContainer4"></div>
-                <div class="p-2 mt-3" style="width: 300px;" id="result"></div>
-            </div>
-
-  <div class="col border p-3 wrapper">
-                <h4 class="category" id="category5" class="d-flex ">Carcharhinus leucas</h4>
-                <input type="file" id="file-input5" multiple accept="image/*" onchange="handleFileInput('file-input5')">
-                <div id="thumbnailContainer5"></div>
-                <div class="p-2 mt-3" style="width: 300px;" id="result"></div>
-            </div>
-
-  <div class="col border p-3 wrapper">
-                <h4 class="category" id="category6" class="d-flex ">Otodus megalodon</h4>
-                <input type="file" id="file-input6" multiple accept="image/*" onchange="handleFileInput('file-input6')">
-                <div id="thumbnailContainer6"></div>
-                <div class="p-2 mt-3" style="width: 300px;" id="result"></div>
-            </div>
-  </div>
+    <button class="btn btn-light border border-secondary" onclick="loadManually()">Add Images</button>
+    
+    <div id="categories" style="display: block;">
+      <div id="categoriesContainer"  class="container row mt-4">
+        <!-- Categories load here -->
+      </div>
+    </div>
 </div>
 
 </div>
@@ -119,12 +96,12 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.0.0/p5.min.js"></script>
 <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
-
+<script type="module" src="utils/createJsonDataSet.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"> </script>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-vis"></script>
 <!-- script.js- logic for tab navigation -->
-<script src="fossilML.js"></script>
+<script src="https://fossil.barberis.com/fossilML.js"></script>
 
 
 </body>

@@ -48,6 +48,7 @@ input::file-selector-button {
   }
   .tab-navigation {
     display: flex;
+    margin-bottom: 1rem;
   }
   .tab-navigation button {
     padding: 10px 20px;
