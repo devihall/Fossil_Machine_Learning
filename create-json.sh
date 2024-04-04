@@ -1,46 +1,60 @@
 #!/bin/bash
 
-echo "Script started with argument: $1"
+echo "Script started with arguments: $1, $2"
 
-# Function to create JSON dataset
 createDatasetJson() {
     local lastFolderName=$1
-    echo "Creating dataset for: $lastFolderName"
+    local numImagesPerCategory=$2
+    echo "Creating dataset for: $lastFolderName, $numImagesPerCategory images per category"
 
     local baseDir="./public/images/dataSets/${lastFolderName}"
     local dataset=()
     local jsonFileName="${lastFolderName}.json"
 
-    # Check if the base directory exists
     if [[ ! -d "$baseDir" ]]; then
         echo "Directory not found: $baseDir"
         exit 1
     fi
 
-    # Navigate to the base directory
     cd "$baseDir"
 
-    # Loop through each category directory
     for categoryDir in */; do
+        echo "Processing category: $categoryDir"
         if [[ -d "$categoryDir" ]]; then
-            # Navigate into the category directory
             cd "$categoryDir"
 
-            # Loop through each file in the category directory
-            for file in *; do
+            # Read filenames into an array, ensuring filenames with spaces are handled as a single entry
+            IFS=$'\n' files=($(ls))
+            unset IFS
+
+            # echo "Files found: ${files[*]}"
+
+            local selectedFiles=()
+
+            if [[ ${#files[@]} -gt $numImagesPerCategory ]]; then
+                IFS=$'\n' selectedFiles=($(shuf -e "${files[@]}" -n "$numImagesPerCategory"))
+                unset IFS
+                echo "Selected files: ${selectedFiles[*]}"
+            else
+                selectedFiles=("${files[@]}")
+            fi
+
+            for file in "${selectedFiles[@]}"; do
+                # echo "Processing file: $file"
                 if [[ -f "$file" ]]; then
-                    # Build the file path and add it to the dataset array
-                    local filePath="/images/dataSets/${lastFolderName}/${categoryDir%/}/${file}"
-                    dataset+=("{\"image\": \"${filePath//\\/\/}\", \"category\": \"${categoryDir%/}\"}")
+                    local filePath="images/dataSets/${lastFolderName}/${categoryDir%/}/${file}"
+                    # echo "Adding file to dataset: $filePath"
+                    dataset+=("{\"image\": \"${filePath}\", \"category\": \"${categoryDir%/}\"}")
+                else
+                    echo "File not found: $file"
                 fi
             done
 
-            # Navigate back to the base directory
             cd ..
         fi
     done
 
-    # Write the dataset array to a JSON file
+
     echo "[" > "../$jsonFileName"
     echo "${dataset[*]}" | sed 's/} {/},\n{/g' >> "../$jsonFileName"
     echo "]" >> "../$jsonFileName"
@@ -48,5 +62,4 @@ createDatasetJson() {
     echo "Dataset JSON created: ${jsonFileName}"
 }
 
-# Call the function with the folder name
-createDatasetJson "$1"
+createDatasetJson "$1" "$2"

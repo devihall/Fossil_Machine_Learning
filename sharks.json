@@ -1,0 +1,12 @@
+[
+{"image": "/images/dataSets/sharks/images/sharktooth3.png", "category": "images"},
+{"image": "/images/dataSets/sharks/images/testammo.jpeg", "category": "images"},
+{"image": "/images/dataSets/sharks/images/sharktooth1.png", "category": "images"},
+{"image": "/images/dataSets/sharks/images/ammonite4.jpeg", "category": "images"},
+{"image": "/images/dataSets/sharks/images/shtest.png", "category": "images"},
+{"image": "/images/dataSets/sharks/images/ammonite3.jpeg", "category": "images"},
+{"image": "/images/dataSets/sharks/images/ammonite1.jpg", "category": "images"},
+{"image": "/images/dataSets/sharks/images/sharktooth2.png", "category": "images"},
+{"image": "/images/dataSets/sharks/images/sharktooth4.png", "category": "images"},
+{"image": "/images/dataSets/sharks/utils/createJsonDataSet.js", "category": "utils"}
+]

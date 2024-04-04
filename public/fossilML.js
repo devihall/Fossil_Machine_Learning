@@ -116,45 +116,58 @@ function loadManually() {
   loadCategories();
 }
 
-function addJsonFile() {
-  const fileInput = document.getElementById('jsonFileInput');
-  const file = fileInput.files[0];
+function executeShellScript(num) {
+  fetch('/execute-script', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ num })
+  })
+  .then(response => response.json())
+  .then(data => {
+      console.log('Success:', data);
+      loadJsonFile('/images/dataSets/sharks.json');
+  })
+  .catch((error) => {
+      console.error('Error:', error);
+  });
+}
 
-  if (file) {
-      const reader = new FileReader();
-
-      reader.onload = function(e) {
-          try {
-              jsonResponse = JSON.parse(e.target.result);
-              console.log('JSON file loaded successfully');
-              loadImagesFromJson();
-              toggleCateggories(true);
-          } catch (error) {
-              console.error('Error parsing JSON:', error);
-          }
-      };
-
-      reader.readAsText(file);
-  }
+async function loadJsonFile(filePath) {
+    try {
+        const response = await fetch(filePath);
+        jsonResponse = await response.json();
+        console.log('JSON file loaded successfully');
+        await loadImagesFromJson();
+    } catch (error) {
+        console.error('Error loading or parsing JSON:', error);
+    }
 }
 
 async function loadImagesFromJson() {
-  await loadCategories('json');
-  // Clear existing thumbnails before loading new ones
-  const thumbnailContainers = document.getElementsByClassName("thumbnailContainer");
-  thumbnailContainers.innerHTML = '';
+    await loadCategories('json');
+    // Clear existing thumbnails before loading new ones
+    const thumbnailContainers = document.getElementsByClassName("thumbnailContainer");
+    Array.from(thumbnailContainers).forEach(container => container.innerHTML = '');
 
-  const imagePromises = [];
+    const imagePromises = [];
 
-  for (let item of jsonResponse) {
+    for (let item of jsonResponse) {
       const img = new Image();
-      img.width = 100; // Set width for display purposes
-      img.height = 100; // Set height for display purposes
-      img.src = item.image;
+      img.width = 100; // Set display width
+      img.height = 100; // Set display height
+  
+      // Build the URL for the resized image
+      const resizeWidth = 680; // Desired width for resizing
+      const resizeHeight = 680; // Desired height for resizing
+      const imagePath = item.image.replace('images/', ''); // Adjust based on your JSON structure and server routing
+      img.src = `/image/${imagePath}?width=${resizeWidth}&height=${resizeHeight}`;
+  
       const thumbnailContainer = document.getElementById("thumbnailContainer" + item.category);
       if (!thumbnailContainer) {
-        console.log('There are no images with these categories');
-        return
+          console.log(`There are no images with these categories: ${item.category}`);
+          continue;
       }
   
       const imagePromise = new Promise((resolve) => {
@@ -163,19 +176,20 @@ async function loadImagesFromJson() {
               thumbnailDiv.classList.add("thumbnail");
               thumbnailDiv.appendChild(img);
               thumbnailContainer.appendChild(thumbnailDiv);
-
+  
               console.log(`Adding ${item.image} to category ${item.category}`);
               myClassifier.addImage(img, item.category).then(resolve);
           };
       });
-
+  
       imagePromises.push(imagePromise);
   }
 
-  await Promise.all(imagePromises).then(() => {
-      console.log("All images loaded.");
-  });
+    await Promise.all(imagePromises).then(() => {
+        console.log("All images loaded.");
+    });
 }
+
 
 // Function to handle training image files input
 async function handleFileInput(inputId) {
@@ -419,3 +433,4 @@ function classify() {
 
 loadCategories('json');
 loadManually();
+loadJsonFile('/images/dataSets/sharks.json');
