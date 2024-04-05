@@ -145,50 +145,86 @@ async function loadJsonFile(filePath) {
     }
 }
 
+const imagePromise = new Promise((resolve, reject) => {
+  img.onload = () => {
+      const thumbnailDiv = document.createElement("div");
+      thumbnailDiv.classList.add("thumbnail");
+      thumbnailDiv.appendChild(img);
+      thumbnailContainer.appendChild(thumbnailDiv);
+
+      console.log(`Adding ${item.image} to category ${item.category}`);
+      myClassifier.addImage(img, item.category).then(resolve);
+  };
+  img.onerror = () => {
+      console.log(`Error loading image: ${item.image}`);
+      reject(new Error(`Failed to load image: ${item.image}`));
+  };
+});
+
+
 async function loadImagesFromJson() {
-    await loadCategories('json');
-    // Clear existing thumbnails before loading new ones
-    const thumbnailContainers = document.getElementsByClassName("thumbnailContainer");
-    Array.from(thumbnailContainers).forEach(container => container.innerHTML = '');
+  const timeout = 10000; // Timeout in milliseconds, e.g., 10000 for 10 seconds
+  let timeoutId;
 
-    const imagePromises = [];
+  // Show the rectangle spinner
+  document.getElementById('rectangle-spinner').style.display = 'flex';
 
-    for (let item of jsonResponse) {
+  // Start a timer to hide the spinner after the timeout period
+  timeoutId = setTimeout(() => {
+      console.log("Timeout reached, hiding spinner.");
+      document.getElementById('rectangle-spinner').style.display = 'none';
+  }, timeout);
+
+  await loadCategories('json');
+  const thumbnailContainers = document.getElementsByClassName("thumbnailContainer");
+  Array.from(thumbnailContainers).forEach(container => container.innerHTML = '');
+
+  const imagePromises = [];
+
+  for (let item of jsonResponse) {
       const img = new Image();
-      img.width = 100; // Set display width
-      img.height = 100; // Set display height
-  
-      // Build the URL for the resized image
-      const resizeWidth = 680; // Desired width for resizing
-      const resizeHeight = 680; // Desired height for resizing
-      const imagePath = item.image.replace('images/', ''); // Adjust based on your JSON structure and server routing
-      img.src = `/image/${imagePath}?width=${resizeWidth}&height=${resizeHeight}`;
-  
+      img.width = 100;
+      img.height = 100;
+
+      img.src = item.image;
       const thumbnailContainer = document.getElementById("thumbnailContainer" + item.category);
       if (!thumbnailContainer) {
           console.log(`There are no images with these categories: ${item.category}`);
           continue;
       }
-  
-      const imagePromise = new Promise((resolve) => {
+
+      const imagePromise = new Promise((resolve, reject) => {
           img.onload = () => {
               const thumbnailDiv = document.createElement("div");
               thumbnailDiv.classList.add("thumbnail");
               thumbnailDiv.appendChild(img);
               thumbnailContainer.appendChild(thumbnailDiv);
-  
+
               console.log(`Adding ${item.image} to category ${item.category}`);
               myClassifier.addImage(img, item.category).then(resolve);
           };
+          img.onerror = () => {
+              console.log(`Error loading image: ${item.image}`);
+              reject(new Error(`Failed to load image: ${item.image}`));
+          };
       });
-  
+
       imagePromises.push(imagePromise);
   }
 
-    await Promise.all(imagePromises).then(() => {
-        console.log("All images loaded.");
-    });
+  try {
+      await Promise.all(imagePromises);
+      console.log("All images loaded.");
+  } catch (error) {
+      console.log("An error occurred while loading images:", error);
+  } finally {
+      // Clear the timeout and hide the spinner
+      clearTimeout(timeoutId);
+      document.getElementById('rectangle-spinner').style.display = 'none';
+  }
 }
+  
+
 
 
 // Function to handle training image files input
@@ -433,4 +469,3 @@ function classify() {
 
 loadCategories('json');
 loadManually();
-loadJsonFile('/images/dataSets/sharks.json');
