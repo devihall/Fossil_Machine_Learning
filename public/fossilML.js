@@ -146,6 +146,10 @@ async function loadJsonFile(filePath) {
 }
 
 const imagePromise = new Promise((resolve, reject) => {
+  if (!img) {
+      return;
+  }
+
   img.onload = () => {
       const thumbnailDiv = document.createElement("div");
       thumbnailDiv.classList.add("thumbnail");
