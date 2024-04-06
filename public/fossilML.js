@@ -1,6 +1,5 @@
 
-////////// logic for tabbed navigation
-
+////////// logic for tabbed navigation/////////
 function openTab(tabName) {
   // Hide all tabs
   var tabs = document.getElementsByClassName("tab");
@@ -23,8 +22,7 @@ function openTab(tabName) {
     .classList.add("active");
 }
 
-////////////////////////////////////
-//// logic for model training
+/////////logic for Feature Extraction & model re-training//////////
 
 // Initialize the MobileNet model
 let myimages = [];
@@ -41,6 +39,7 @@ let surface;
 let jsonResponse = [];
 let categoryCount = 0;
 
+// initialize featureExtractor & image Classifier
 const myfeatureExtractor = ml5.featureExtractor("MobileNet", modelReady);
 let myClassifier = myfeatureExtractor.classification(myimages, { numLabels: categoryCount });
 
@@ -51,7 +50,7 @@ function modelReady() {
   console.log("Model is ready");
 }
 
-// Load categories
+//Function to handle Loading categories
 async function loadCategories(inputType) {
   resetModel();
   // Fetch and parse the categories.json file
@@ -112,10 +111,12 @@ function toggleCateggories(state) {
   }
 }
 
+
 function loadManually() {
   loadCategories();
 }
 
+// function to create json file (excutes the shell script)
 function executeShellScript(num) {
   fetch('/execute-script', {
       method: 'POST',
@@ -127,6 +128,8 @@ function executeShellScript(num) {
   .then(response => response.json())
   .then(data => {
       console.log('Success:', data);
+
+      // load the newly created json file
       loadJsonFile('/images/dataSets/sharks.json');
   })
   .catch((error) => {
@@ -134,6 +137,7 @@ function executeShellScript(num) {
   });
 }
 
+// TO DO - ask Cris why we are loading images from JSON...is this in Dev env only?
 async function loadJsonFile(filePath) {
     try {
         const response = await fetch(filePath);
@@ -144,12 +148,11 @@ async function loadJsonFile(filePath) {
         console.error('Error loading or parsing JSON:', error);
     }
 }
-
+// TO DO - ask Cris why this function is repeated 3 times? Function to add Thumbnails to UI
 const imagePromise = new Promise((resolve, reject) => {
   if (!img) {
       return;
   }
-
   img.onload = () => {
       const thumbnailDiv = document.createElement("div");
       thumbnailDiv.classList.add("thumbnail");
@@ -165,7 +168,7 @@ const imagePromise = new Promise((resolve, reject) => {
   };
 });
 
-
+// TO DO - ask Cris is this function named appropriately- we don't seem to be loading images from JSON in this function
 async function loadImagesFromJson() {
   const timeout = 10000; // Timeout in milliseconds, e.g., 10000 for 10 seconds
   let timeoutId;
@@ -191,12 +194,14 @@ async function loadImagesFromJson() {
       img.height = 100;
 
       img.src = item.image;
+
+      // load categories from json file into thumbnail containers
       const thumbnailContainer = document.getElementById("thumbnailContainer" + item.category);
       if (!thumbnailContainer) {
           console.log(`There are no images with these categories: ${item.category}`);
           continue;
       }
-
+// TO DO - ask Cris why this function is repeated 3 times? Function to add Thumbnails to UI
       const imagePromise = new Promise((resolve, reject) => {
           img.onload = () => {
               const thumbnailDiv = document.createElement("div");
@@ -229,8 +234,6 @@ async function loadImagesFromJson() {
 }
   
 
-
-
 // Function to handle training image files input
 async function handleFileInput(inputId) {
   const input = document.getElementById(inputId);
@@ -243,7 +246,7 @@ async function handleFileInput(inputId) {
 
   const numFiles = input.files.length;
   if (numFiles < 2) {
-    // Show bootstrap alert
+    // Show bootstrap alert to "Select 2 or more files"
     const alertElement = document.createElement("div");
     // Show bootstrap alert
     alertElement.classList.add("alert", "alert-danger");
@@ -274,6 +277,7 @@ async function handleFileInput(inputId) {
     img.src = URL.createObjectURL(file);
     console.log("FILE", file);
 
+    // TO DO - ask Cris why this function is repeated 3 times? Function to add Thumbnails to UI
     const thumbnailDiv = document.createElement("div");
     thumbnailDiv.classList.add("thumbnail");
     thumbnailDiv.appendChild(img);
@@ -286,7 +290,7 @@ async function handleFileInput(inputId) {
     let category = inputId;
     console.log("category", category);
 
-    console.log("IMG", img)
+    console.log("IMG", img);
     // add training images to model
     promises.push(myClassifier.addImage(img, category));
     console.log(
@@ -300,9 +304,10 @@ async function handleFileInput(inputId) {
   });
 }
 
+// Function to train model
 async function trainModel() {
   console.log("Starting training...");
-
+// ask model to train with the new data
   myClassifier.train(whileTraining)
       .then((results) => {
           console.log("Training complete", results);
@@ -314,6 +319,7 @@ async function trainModel() {
                   Training complete! Check the Performance tab for how the model did.
               </div>`;
 
+              // get loss data
           const lossDataForVisualization = results.epoch.map((epochValue, index) => ({
               x: epochValue,
               y: results.history.loss[index]
@@ -329,6 +335,7 @@ async function trainModel() {
               xLabel: "Epoch",
               yLabel: "Loss"
           };
+          // create loss graph
           tfvis.render.linechart(container, data, options);
       })
       .catch((error) => {
@@ -336,8 +343,7 @@ async function trainModel() {
       });
 }
 
-
-
+// function to call when model is training
 async function whileTraining() {
   console.log("model is training");
 
@@ -349,36 +355,38 @@ async function whileTraining() {
         </div>`;
 }
 
+// function to reset the model
 async function resetModel() {
   trainingResults = null;
   // Check if myClassifier exists and has a clear method
   if (myClassifier && myClassifier.clear) {
-      myClassifier.clear();
-      console.log("Classifier data cleared.");
+    myClassifier.clear();
+    console.log("Classifier data cleared.");
   }
 
-  // Reinitialize the classifier
+  // TO DO- Ask cris why we are reintializing?- Reinitialize the classifier-
   const featureExtractor = ml5.featureExtractor("MobileNet", modelReady);
-  myClassifier = featureExtractor.classification(myimages, { numLabels: categoryCount });
+  myClassifier = featureExtractor.classification(myimages, {
+    numLabels: categoryCount,
+  });
   console.log("Classifier reinitialized.");
 
-  // Reset the UI elements
-  const thumbnailContainers = document.querySelectorAll('.thumbnailContainer');
-  thumbnailContainers.forEach(container => {
-      container.innerHTML = '';
+  // Reset the UI elements- clear image containers and print "reset" message to UI
+  const thumbnailContainers = document.querySelectorAll(".thumbnailContainer");
+  thumbnailContainers.forEach((container) => {
+    container.innerHTML = "";
   });
-
   const trainingMessageContainer = document.getElementById("trainingMessage");
-  trainingMessageContainer.innerHTML = '';
+  trainingMessageContainer.innerHTML = "";
 
   console.log("Model and UI have been reset.");
 }
 
 
-// logic for classifying images
-///////////////////////////////////
+///////// logic for classifying test images//////
 function readURL(input) {
   console.log("choose image clicked");
+  // input test image for classification
   if (input.files && input.files[0]) {
     $("#classify").prop("disabled", false);
     var reader = new FileReader();
@@ -391,20 +399,21 @@ function readURL(input) {
   }
 }
 
-/////////////////////////////////////////////////////
+
 // logic for image classification with retrained model
 function classify() {
   console.log("classify button clicked");
   $("#classify").prop("disabled", true);
 
   const element = $("#result");
+  // print "Detecting..." message to the UI
   element.html("Detecting...").addClass("border");
 
   // Clear the content of the result div
   element.empty();
-
-  // Initialize Image Classifier with MobileNet.
   const img = document.getElementById("image");
+
+  // Ask Image Classifier to classify test image
   myClassifier.classify(img, gotResult);
 
   // Move the #result div below the "Choose Image" and "Classify" button
@@ -420,9 +429,9 @@ function classify() {
   let categoryNames = {};
 
   async function loadCategoryNames() {
-    const response = await fetch('categories.json');
+    const response = await fetch("categories.json");
     const categories = await response.json();
-    // Convert the array to a dictionary for quick lookup
+    // Convert the array of category names to a dictionary by assigning an id to each category
     categoryNames = categories.reduce((obj, category) => {
       obj[category.id] = category.name;
       return obj;
@@ -436,9 +445,10 @@ function classify() {
     if (Object.keys(categoryNames).length === 0) {
       await loadCategoryNames();
     }
-    
+
     if (error) {
       console.log(error);
+      // if images are not added for classification, print error message to UI
       const errorMessage = $(
         "<div class='alert alert-danger alert-dismissible fade show' role='alert'>" +
           "Train the model before using the classifier" +
@@ -469,7 +479,7 @@ function classify() {
   }
 }
 
-
+// TO DO - ask Cris why is there a function call for loadManually which is calling loadCategories and a another seperate function call for loadCategories?
 
 loadCategories('json');
 loadManually();
