@@ -38,6 +38,7 @@ let epoch;
 let surface;
 let jsonResponse = [];
 let categoryCount = 0;
+let categories;
 
 // initialize featureExtractor & image Classifier
 const myfeatureExtractor = ml5.featureExtractor("MobileNet", modelReady);
@@ -55,7 +56,7 @@ async function loadCategories(inputType) {
   resetModel();
   // Fetch and parse the categories.json file
   const response = await fetch('categories.json');
-  const categories = await response.json();
+  categories = await response.json();
   categoryCount = categories.length;
   // Get the container where we want to add the categories
   const container = document.getElementById('categoriesContainer');
@@ -101,17 +102,6 @@ async function loadCategories(inputType) {
   });
 }
 
-// Show all pre-loaded categories
-function toggleCateggories(state) {
-  const manualAdditionElement = document.getElementById('categories');
-  if (manualAdditionElement.style.display === 'none' || state === true) {
-      manualAdditionElement.style.display = 'block';
-  } else {
-      manualAdditionElement.style.display = 'none';
-  }
-}
-
-
 function loadManually() {
   loadCategories();
 }
@@ -149,24 +139,24 @@ async function loadJsonFile(filePath) {
     }
 }
 // TO DO - ask Cris why this function is repeated 3 times? Function to add Thumbnails to UI
-const imagePromise = new Promise((resolve, reject) => {
-  if (!img) {
-      return;
-  }
-  img.onload = () => {
-      const thumbnailDiv = document.createElement("div");
-      thumbnailDiv.classList.add("thumbnail");
-      thumbnailDiv.appendChild(img);
-      thumbnailContainer.appendChild(thumbnailDiv);
+// const imagePromise = new Promise((resolve, reject) => {
+//   if (!img) {
+//       return;
+//   }
+//   img.onload = () => {
+//       const thumbnailDiv = document.createElement("div");
+//       thumbnailDiv.classList.add("thumbnail");
+//       thumbnailDiv.appendChild(img);
+//       thumbnailContainer.appendChild(thumbnailDiv);
 
-      console.log(`Adding ${item.image} to category ${item.category}`);
-      myClassifier.addImage(img, item.category).then(resolve);
-  };
-  img.onerror = () => {
-      console.log(`Error loading image: ${item.image}`);
-      reject(new Error(`Failed to load image: ${item.image}`));
-  };
-});
+//       console.log(`Adding ${item.image} to category ${item.category}`);
+//       myClassifier.addImage(img, item.category).then(resolve);
+//   };
+//   img.onerror = () => {
+//       console.log(`Error loading image: ${item.image}`);
+//       reject(new Error(`Failed to load image: ${item.image}`));
+//   };
+// });
 
 // TO DO - ask Cris is this function named appropriately- we don't seem to be loading images from JSON in this function
 async function loadImagesFromJson() {
@@ -293,10 +283,6 @@ async function handleFileInput(inputId) {
     console.log("IMG", img);
     // add training images to model
     promises.push(myClassifier.addImage(img, category));
-    console.log(
-      "myClassifier.addImage(img, category)",
-      myClassifier.addImage(img, category)
-    );
   }
   // Wait for all images to be added before starting training
   await Promise.all(promises).then(() => {
@@ -430,7 +416,7 @@ function classify() {
 
   async function loadCategoryNames() {
     const response = await fetch("categories.json");
-    const categories = await response.json();
+    categories = await response.json();
     // Convert the array of category names to a dictionary by assigning an id to each category
     categoryNames = categories.reduce((obj, category) => {
       obj[category.id] = category.name;
