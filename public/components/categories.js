@@ -4,7 +4,7 @@
 export async function loadCategories(inputType) {
   // Fetch and parse the categories.json file
   const response = await fetch("categories.json");
-  categories = await response.json();
+  const categories = await response.json();
   const categoryCount = categories.length;
 
   console.log("categories inside loadCategories", categories);
@@ -53,15 +53,3 @@ export async function loadCategories(inputType) {
   });
 }
 
-
-// loading newly created JSON file (that has images as property values)
-export async function loadJsonFile(filePath) {
-  try {
-    const response = await fetch(filePath);
-    jsonResponse = await response.json();
-    console.log("JSON file loaded successfully");
-    await loadImagesFromJson();
-  } catch (error) {
-    console.error("Error loading or parsing JSON:", error);
-  }
-}

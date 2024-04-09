@@ -1,33 +1,41 @@
 export function initModel(categories) {
+  return new Promise((resolve, reject) => {
+    // Initialize the MobileNet model
+    const myfeatureExtractor = ml5.featureExtractor("MobileNet", modelReady);
+    let myClassifier = myfeatureExtractor.classification({ numLabels: categories.length });
 
-  /////////logic for Feature Extraction & model re-training//////////
+    // Function to handle model loading
+    function modelReady() {
+      console.log("Model is ready");
+      resolve(myClassifier);
+    }
 
-  // Initialize the MobileNet model
-  let myimages = [];
-  let img;
-  let currentIndex = 0;
-  let allImages = [];
-  let predictions = [];
-
-
-  const myfeatureExtractor = ml5.featureExtractor("MobileNet", modelReady);
-  let myClassifier = myfeatureExtractor.classification(myimages, {
-  numLabels: categories.length,
   });
+}
 
-  console.log("myimages", myimages);
-
-  // Function to handle model loading
-  function modelReady() {
-  console.log("Model is ready");
+// function to reset the model
+export async function resetModel() {
+  trainingResults = null;
+  // Check if myClassifier exists and has a clear method
+  if (myClassifier && myClassifier.clear) {
+    myClassifier.clear();
+    console.log("Classifier data cleared.");
   }
 
-  // initialize Feature Extractor & Classifier
+  // Reinitialize the Feature Extractor CLassifier after re-setting
   const featureExtractor = ml5.featureExtractor("MobileNet", modelReady);
   myClassifier = featureExtractor.classification(myimages, {
-      numLabels: categoryCount,
+    numLabels: categoryCount,
   });
+  console.log("Classifier reinitialized.");
 
-  return myClassifier;
+  // Reset the UI elements- clear image containers and print "reset" message to UI
+  const thumbnailContainers = document.querySelectorAll(".thumbnailContainer");
+  thumbnailContainers.forEach((container) => {
+    container.innerHTML = "";
+  });
+  const trainingMessageContainer = document.getElementById("trainingMessage");
+  trainingMessageContainer.innerHTML = "";
 
+  console.log("Model and UI have been reset.");
 }

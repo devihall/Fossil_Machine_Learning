@@ -3,14 +3,11 @@
 export function plotAccuracy( results) {
   // Initialize an array to store loss values
   let lossData = [];
-  let trainingResults;
   let loss;
   let epoch;
   let surface;
-  let jsonResponse = [];
-  let categoryCount = 0;
   let classificationResults;
-  
+
   console.log("Plotting accuracy...");
 
   console.log("hello world");
