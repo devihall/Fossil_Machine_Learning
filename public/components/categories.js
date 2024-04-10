@@ -53,3 +53,15 @@ export async function loadCategories(inputType) {
   });
 }
 
+export async function categoryNames() {
+  const response = await fetch("categories.json");
+  const categories = await response.json();  
+  if (Array.isArray(categories)) {
+    return categories.reduce((obj, category) => {
+      obj[category.id] = category.name;
+      return obj;
+    }, {});
+  } else {
+      console.error('Expected an array, but got:', categories);
+  }
+}

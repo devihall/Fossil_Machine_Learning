@@ -14,20 +14,13 @@ export function initModel(categories) {
 }
 
 // function to reset the model
-export async function resetModel() {
+export async function resetModel(myClassifier, trainingResults) {
   trainingResults = null;
   // Check if myClassifier exists and has a clear method
   if (myClassifier && myClassifier.clear) {
     myClassifier.clear();
     console.log("Classifier data cleared.");
   }
-
-  // Reinitialize the Feature Extractor CLassifier after re-setting
-  const featureExtractor = ml5.featureExtractor("MobileNet", modelReady);
-  myClassifier = featureExtractor.classification(myimages, {
-    numLabels: categoryCount,
-  });
-  console.log("Classifier reinitialized.");
 
   // Reset the UI elements- clear image containers and print "reset" message to UI
   const thumbnailContainers = document.querySelectorAll(".thumbnailContainer");

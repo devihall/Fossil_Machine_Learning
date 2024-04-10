@@ -1,3 +1,6 @@
+import { categoryNames } from "./categories.js";
+import { plotAccuracy } from "./performance.js";
+
 ///////// logic for classifying single test image//////
 export function readURL(input) {
   console.log("choose image clicked");
@@ -15,7 +18,7 @@ export function readURL(input) {
 }
 
 // logic for image classification with retrained model
-export function classify() {
+export async function classify(myClassifier) {
   console.log("classify button clicked");
   $("#classify").prop("disabled", true);
 
@@ -40,31 +43,13 @@ export function classify() {
   }
   resultContainer.parent().find(".result-container").html(element);
 
-  let categoryNames = {};
-
-  // get categories from json file
-  async function loadCategoryNames() {
-    const response = await fetch("categories.json");
-    categories = await response.json();
-
-    // Convert the array of category names to a dictionary by assigning an id to each category
-    categoryNames = categories.reduce((obj, category) => {
-      obj[category.id] = category.name;
-      return obj;
-    }, {});
-
-    // save training categories to an array
-    //  trainingCategories = categories;
-  }
 
   // Function to run when classification results arrive
   async function gotResult(error, classificationResults) {
     console.log("in gotResult function");
 
-    if (Object.keys(categoryNames).length === 0) {
-      await loadCategoryNames();
-    }
-
+    const categories = await categoryNames();
+    
     if (error) {
       console.log(error);
       // if images are not added for classification, print error message to UI
@@ -91,7 +76,7 @@ export function classify() {
       // print label and confidence to screen
       let num = classificationResults[0].confidence * 100;
       const categoryID = classificationResults[0].label;
-      categoryName = categoryNames[categoryID] || "Unknown Category";
+      const categoryName = categories[categoryID] || "Unknown Category";
 
       console.log("categoryname", categoryName);
       // console.log("categoryID", categoryID);
@@ -131,15 +116,11 @@ export function classify() {
         return correctPredictions / totalExamples;
       }
 
-      // /////////////////
-
       // Calculate accuracy
       const accuracy = calculateAccuracy(predictions, trueLabels);
       console.log("Accuracy:", accuracy);
 
       plotAccuracy(classificationResults);
-
-      // /////////////////
 
       element.html(
         "<h5>" +
