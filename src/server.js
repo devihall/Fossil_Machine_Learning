@@ -8,7 +8,7 @@ app.use(express.json());
 app.post('/execute-script', (req, res) => {
     const { num } = req.body; 
 
-    exec(`bash ./create-json.sh sharks ${num}`, (error, stdout, stderr) => {
+    exec(`bash ./utils/create-json.sh sharks ${num}`, (error, stdout, stderr) => {
         if (error) {
             console.error(`exec error: ${error}`);
             return res.status(500).send({ status: 'error', message: `Script execution failed: ${error.message}` });
