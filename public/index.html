@@ -18,13 +18,34 @@
     <p>Loading images to the model...</p>
 </div>
 <div class="tab-navigation">
+  <button class="tab-button" onclick="handleTabs('datasets')">Dataset</button>
   <button class="tab-button" onclick="handleTabs('training')">Training</button>
   <button class="tab-button" onclick="handleTabs('classification')">Classification</button>
   <button class="tab-button" onclick="handleTabs('performance')">Performance</button>
 </div>
 
+<!-- content for Model DataSets Tab -->
+<div id="datasets" class="tab active">
+  <h2>Dataset</h2>
+  <div class="d-flex justify-content-between align-items-center">
+    <p>Upload training images</p>
+  </div>
+  
+
+    
+  <div id="" class="tabcontent mt-3">
+    <div id="dataMessage"></div>
+    <div id="categories" style="display: block;">
+      <div id="datasetCategoriesContainer"  class="container row mt-4">
+        <!-- Categories load here -->
+      </div>
+    </div>
+</div>
+
+</div>
+
 <!-- content for Model Training Tab -->
-<div id="training" class="tab active">
+<div id="training" class="tab">
   <h2>Model Training</h2>
   <div class="d-flex justify-content-between align-items-center">
     <p>Upload training images</p>
@@ -50,7 +71,7 @@
     <button class="btn btn-light border border-secondary" onclick="loadManually()">Add Images</button>
     
     <div id="categories" style="display: block;">
-      <div id="categoriesContainer"  class="container row mt-4">
+      <div id="trainingCategoriesContainer"  class="container row mt-4">
         <!-- Categories load here -->
       </div>
     </div>

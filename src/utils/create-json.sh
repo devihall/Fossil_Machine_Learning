@@ -7,7 +7,7 @@ createDatasetJson() {
     local numImagesPerCategory=$2
     echo "Creating dataset for: $lastFolderName, $numImagesPerCategory images per category"
 
-    local baseDir="./public/images/dataSets/${lastFolderName}"
+    local baseDir="../public/images/dataSets/${lastFolderName}"
     local dataset=()
     local jsonFileName="${lastFolderName}.json"
 

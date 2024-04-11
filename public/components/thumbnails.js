@@ -13,7 +13,7 @@ export async function loadImagesFromJson() {
   }, timeout);
 
   // load categories
-  await loadCategories("json");
+  await loadCategories("json", 'training');
   const thumbnailContainers =
     document.getElementsByClassName("thumbnailContainer");
   Array.from(thumbnailContainers).forEach(
@@ -33,6 +33,7 @@ export async function loadImagesFromJson() {
     const thumbnailContainer = document.getElementById(
       "thumbnailContainer" + item.category
     );
+
     if (!thumbnailContainer) {
       console.log(
         `There are no images with these categories: ${item.category}`

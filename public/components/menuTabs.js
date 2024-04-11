@@ -12,7 +12,10 @@ export function openTab(tabName) {
   }
 
   // Show the selected tab
-  document.getElementById(tabName).classList.add("active");
+  let tab = document.getElementById(tabName)
+  if (tab) {
+    tab.classList.add("active");
+  }
 
   // Activate the selected tab button
   document

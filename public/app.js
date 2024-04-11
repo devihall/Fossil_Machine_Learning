@@ -1,6 +1,6 @@
-
 import { openTab } from "./components/menuTabs.js"; 
 import { loadCategories } from "./components/categories.js";
+import { dataFeed } from "./components/dataSet.js";
 import { initModel, resetModel } from "./components/model.js";
 import { randomizeData } from "./components/dataSet.js";
 import { trainModel } from "./components/traning.js";
@@ -8,16 +8,24 @@ import { readURL, classify } from "./components/classification.js";
 
 let myClassifier;
 let trainingResults;
+let categories;
 
 // Menu tabs
-function handleTabs(tabName) {
+function handleTabs(tabName = 'datasets') {
   openTab(tabName);
+
+  switch (tabName) {
+    case 'datasets':
+      categories = loadCategories('feed', 'datasets');
+      dataFeed();
+      break;
+    case 'training':
+      categories = loadCategories('json', 'training');
+      break;
+    default:
+      break;
+    }
 }
-
-// Load categories and model
-const categories = loadCategories('json');
-
-loadModel(categories);
 
 // Load the model
 async function loadModel(categories) {
@@ -62,14 +70,13 @@ export function handleClasification() {
   classify(myClassifier);
 }
 
+handleTabs();
+loadModel(categories);
 
 
-
+window.handleTabs = handleTabs;
 window.handleRandFeed = handleRandFeed;  
 window.handleTraining = handleTraining;  
 window.handleReset = handleReset;
-window.handleTabs = handleTabs;
 window.handleClasificationFile = handleClasificationFile;
 window.handleClasification = handleClasification;
-
-

@@ -1,4 +1,4 @@
-
+import { loadCategories } from "./categories.js";
 // Function to MANUALLY add training image files to model
 // export async function handleFileInput(inputId) {
 //   const input = document.getElementById(inputId);
@@ -65,6 +65,11 @@
 //   });
 // }
 
+export async function dataFeed() {
+  loadCategories("json", 'dataset');
+
+  // add logic to feed dataset
+}
 
 // loading newly created JSON file (that has images as property values)
 export async function loadData(filePath, myClassifier) {
