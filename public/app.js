@@ -1,7 +1,8 @@
 import { openTab } from "./components/menuTabs.js"; 
 import { loadCategories } from "./components/categories.js";
 import { dataFeed } from "./components/dataSet.js";
-import { initModel, resetModel } from "./components/model.js";
+// import { initModel, resetModel } from "./components/model.js";
+import { initModel, resetModel } from "./components/model-cnn.js";
 import { randomizeData } from "./components/dataSet.js";
 import { trainModel } from "./components/traning.js";
 import { readURL, classify } from "./components/classification.js";
@@ -30,6 +31,7 @@ function handleTabs(tabName = 'datasets') {
 // Load the model
 async function loadModel(categories) {
   myClassifier = await initModel(categories);
+  console.log('Model loaded');
 }
 
 // Feed the model with random data

@@ -1,12 +1,17 @@
 import { lostDataVisualization } from "./performance.js";
 
 // Function to train model
-export async function trainModel(myClassifier) {
-  // ask model to train with the new data
-  myClassifier
-    .train(whileTraining)
+export async function trainModel(cnn) {
+
+  const trainingOptions = {
+    epochs: 32,
+    batchSize: 12,
+  };
+
+  cnn.train( trainingOptions,  whileTraining, finishedTraining)
     .then((results) => {
       console.log("Training complete", results);
+
       // const trainresults =  results;
       // plotAccuracy(categories);
 
@@ -23,6 +28,11 @@ export async function trainModel(myClassifier) {
 
 
     })
+
+    function finishedTraining() {
+      console.log("Training finished");
+      classify(); // Once training is finished, proceed with classification
+    }
   }
 
 // function to call when model is training
