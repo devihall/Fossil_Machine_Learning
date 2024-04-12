@@ -44,9 +44,32 @@ let classificationResults;
 let categories;
 let categoryName;
 let accuracyData = [];
+const plotaccuracyData = {};
+// labels before training, prediction
+// plotaccuracyData = {
+//                      labelBT: ['cat1', 'cat2'],
+//                      predictionLabel: 'cat1',
+//                      epoch: [1,2,3,4,5,6,7..]
+//                     }
+// push values
 
 // initialize featureExtractor & image Classifier
-const myfeatureExtractor = ml5.featureExtractor("MobileNet", modelReady);
+const options = {
+  debug: true,
+  metrics: ["accuracy"],
+};
+
+const myfeatureExtractor = ml5.featureExtractor(
+  "MobileNet",
+  modelReady,
+  options
+);
+
+// const myfeatureExtractor = ml5.featureExtractor(
+//   "MobileNet",
+//   modelReady,
+//   options
+// );
 let myClassifier = myfeatureExtractor.classification(myimages, {
   numLabels: categoryCount,
 });
@@ -305,8 +328,8 @@ async function trainModel() {
     .train(whileTraining)
     .then((results) => {
       console.log("Training complete", results);
-      // const trainresults =  results;
-      plotAccuracy(categories);
+      console.log("Training onEpochEnd", results.onEpochEnd());
+
 
       // Update the UI and visualize the training results
       const trainingMessageContainer =
@@ -328,7 +351,7 @@ async function trainModel() {
         series: ["Loss vs Epoch"],
       };
 
-      // get container for graph
+      // get container for loss graph
       const container = document.getElementById("demo");
       const options = {
         xLabel: "Epoch",
@@ -342,18 +365,24 @@ async function trainModel() {
     });
 }
 
+////////////
+
+// // Function to be called on batch end
+// async function onBatchEnd(batch, logs) {
+//   console.log("HI")
+//   const predictions = myClassifier.model.predict(myClassifier.xs);
+//   // Log or process the predictions as needed
+//   console.log('Batch:', batch, 'Predictions:', predictions.arraySync());
+// }
 /////////
 // visualize accuracy
-function plotAccuracy( cat, epoch, loss, accuracy) {
+// function plotAccuracy( cat,  accuracyCalculated) {
+  function plotAccuracy( accuracyObj) {
+
   console.log("Plotting accuracy...");
-
   console.log("hello world");
-    console.log("hcategories inside visualize", cat);
-
-  const epochs = accuracyData.map((data) => data.epoch);
-  const accuracies = accuracyData.map((data) => data.accuracy);
-  console.log("epochs plotacc", epochs);
-  console.log("accuracy plotacc", accuracies);
+  console.log("hcategories inside visualize", accuracyObj.cat);
+  console.log("accuracy plotacc", accuracyCalculated);
 }
 
 // function to call when model is training
@@ -362,16 +391,18 @@ async function whileTraining(epoch, loss) {
   //////
   console.log(`Epoch: ${epoch}, Loss: ${loss}`);
   //// Calculate accuracy (this is just a placeholder, replace it with actual accuracy calculation)
-  const accuracy = 1 - loss;
-  accuracyData.push({ epoch, accuracy });
+  
   //////
-
   // Display "Model is training" message
   const trainingMessageContainer = document.getElementById("trainingMessage");
   trainingMessageContainer.innerHTML = `
         <div class="alert alert-info" role="alert">
             Model is training...
         </div>`;
+
+        
+
+
 }
 
 // function to reset the model
@@ -487,11 +518,6 @@ function classify() {
     } else {
       console.log("classification results", classificationResults);
 
-      // ///////////////
-
-      // plotAccuracy(classificationResults);
-      // ///////////////
-
       // print label and confidence to screen
       let num = classificationResults[0].confidence * 100;
       const categoryID = classificationResults[0].label;
@@ -500,50 +526,6 @@ function classify() {
       console.log("categoryname", categoryName);
       // console.log("categoryID", categoryID);
 
-      // Extract predicted label and confidence score
-      const predictedLabel = classificationResults[0].label;
-      const confidence = classificationResults[0].confidence;
-
-      // Here, you need to find the true label for the test image
-      // const trueLabel = findTrueLabel(classificationResults[0].image); // Replace classificationResults[0].image with the identifier used to find the true label
-      const trueLabel = classificationResults[0].label;
-      // Push the predicted label to an array of predictions
-      const predictions = [predictedLabel];
-
-      // Push the true label to an array of true labels
-      const trueLabels = [trueLabel];
-
-      // /////////////////
-      // Function to calculate accuracy
-      function calculateAccuracy(predictions, trueLabels) {
-        if (predictions.length !== trueLabels.length) {
-          console.error(
-            "Length of predictions and true labels arrays must be equal."
-          );
-          return null;
-        }
-
-        const totalExamples = predictions.length;
-        let correctPredictions = 0;
-
-        for (let i = 0; i < totalExamples; i++) {
-          if (predictions[i] === trueLabels[i]) {
-            correctPredictions++;
-          }
-        }
-
-        return correctPredictions / totalExamples;
-      }
-
-      // /////////////////
-
-      // Calculate accuracy
-      const accuracy = calculateAccuracy(predictions, trueLabels);
-      console.log("Accuracy:", accuracy);
-
-      plotAccuracy(classificationResults, accuracy);
-
-      // /////////////////
 
       element.html(
         "<h5>" +
