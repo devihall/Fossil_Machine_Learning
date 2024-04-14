@@ -20,11 +20,6 @@
 
   
   <script>
-let trainingLossData = [];
-let validationLossData = [];
-
-
-
     // Step 1: load data or create some data
     const data = [
       { r: 255, g: 0, b: 0, color: "red-ish" },
@@ -46,8 +41,6 @@ let validationLossData = [];
 
     // Step 3: initialize your neural network
     const nn = ml5.neuralNetwork(options);
-    // const vis = nn.neuralNetworkVis;
-
 
     // Step 4: add data to the neural network
     data.forEach((item) => {
@@ -73,7 +66,7 @@ let validationLossData = [];
         batchSize: 12,
       };
     
-     nn.train( trainingOptions,  whileTraining, finishedTraining)
+     nn.train(trainingOptions,  whileTraining, finishedTraining)
     }
 
     // Step 7: use the trained model
@@ -82,38 +75,42 @@ let validationLossData = [];
       classify(); // Once training is finished, proceed with classification
     }
 
+    // Step 7.1: Define a function to log loss while training and visualize with tf-vis
    // Step 7.1: Define a function to log loss while training and visualize with tf-vis
 function whileTraining(epoch, loss) {
-    
-console.log("Loss obj only:", loss);
+
 console.log(`Epoch ${epoch}, Loss: ${loss.loss}`);
 
-//   Accumulate loss data
-//   trainingLossData.push({ x: epoch, y: loss.loss });
-//     validationLossData.push({ x: epoch, y: loss.val_loss});
 
+//   console.log("Epoch", epoch);
+// console.log("Loss:" , loss)
+//   console.log(`Epoch ${epoch}, Loss: ${loss}`);
+//   tfvis.show.history(document.getElementById('loss-chart'), { values: { loss } }, ['loss']);
+// NeuralNetworkVis.trainingVis
 
-//   // Visualize the accumulated loss data
-//   const trainingLossGraph = {
-//     values: trainingLossData,
-//     series: ["Training Loss vs Epoch"],
-//   };
+   const lossDataForVisualization = epoch.map(
+        (epochValue, index) => ({
+          x: epochValue,
+          y: loss[index],
+        })
+      );
 
-// //   const validationLossGraph = {
-// //     values: trainingLossData,
-// //     series: ["Training Loss vs Epoch"],
-// //   };
+      console.log ("lossDataForVisualization", lossDataForVisualization);
+      
+//       const data = {
+//         values: [lossDataForVisualization],
+//         series: ["Loss vs Epoch"],
+//       };
 
-//   const options = {
-//     xLabel: "Epoch",
-//     yLabel: "Loss",
-//     //yAxisDomain: [0, 1],
-//         //seriesColors: ['teal', 'tomato']
+//       // get container for loss graph
+//       const container = document.getElementById("demo");
+//       const options = {
+//         xLabel: "Epoch",
+//         yLabel: "Loss",
+//       };
+//       // create loss graph
+//       tfvis.render.linechart(container, data, options);
 
-//   };
-
-//   const container = document.getElementById("loss-chart");
-//   tfvis.render.linechart(container, trainingLossGraph, options);
 }
 
 
@@ -124,7 +121,7 @@ console.log(`Epoch ${epoch}, Loss: ${loss.loss}`);
         g: 0,
         b: 0,
       };
-  nn.classify(input, handleResults);
+      nn.classify(input, handleResults);
     }
 
     // Step 9: define a function to handle the results of your classification
@@ -149,3 +146,4 @@ console.log(`Epoch ${epoch}, Loss: ${loss.loss}`);
   <div id="loss-chart"></div>
 </body>
 </html>
+
