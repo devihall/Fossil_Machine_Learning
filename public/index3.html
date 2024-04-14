@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Image RGB Classification</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-vis"></script>
+  <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
+</head>
+<body>
+  <h1>Image RGB Classification</h1>
+
+  <canvas id="canvas" style="display:none;"></canvas>
+
+  <button onclick="trainModel()">Train Model</button>
+  <button onclick="classify()">Classify</button>
+
+  <div class="neuralNetworkVis"></div>
+  <div id="result"></div>
+
+  <script>
+    const imageUrls = [
+      "images/dataSets/sharks/galeocerdo_cuvier/VP UF-TRO8939 lingual copy.png", // Assume this is red-ish
+      "images/dataSets/sharks/carcharodon_carcharias/VP UF-TRO2368 lingual copy.png", // Assume this is green-ish
+      "images/dataSets/sharks/otodus_megalodon/VP GS1381 lingual copy.png"  // Assume this is red-ish
+    ];
+    const labels = ["red-ish", "green-ish"];
+
+    let nn;
+
+    window.onload = function() {
+      const options = {
+        task: 'classification',
+        debug: true
+      };
+      nn = ml5.neuralNetwork(options);
+
+      imageUrls.forEach((url, index) => {
+        loadImageToCanvas(url, index % 2 === 0 ? labels[0] : labels[1]);
+      });
+    };
+
+    function loadImageToCanvas(url, label) {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = function() {
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imgData.data;
+        console.log(data);
+
+        let r = 0, g = 0, b = 0;
+        for (let i = 0; i < data.length; i += 4) {
+          r += data[i];
+          g += data[i + 1];
+          b += data[i + 2];
+        }
+        r = Math.floor(r / (data.length / 4));
+        g = Math.floor(g / (data.length / 4));
+        b = Math.floor(b / (data.length / 4));
+        console.log({r, g, b}, {label});
+        nn.addData({r, g, b}, {label});
+      };
+      img.src = url;
+    }
+
+    function trainModel() {
+      nn.normalizeData();
+      nn.train({epochs: 50}, () => {
+        console.log("Model trained!");
+        classify();
+      });
+    }
+
+    function classify() {
+      loadImageToCanvas("images/dataSets/sharks/otodus_megalodon/VP GS1381 lingual copy.png", (r, g, b) => {
+        nn.classify({r, g, b}, (error, result) => {
+          if (error) {
+            console.error(error);
+            return;
+          }
+          document.getElementById('result').innerText = `Classification: ${result[0].label}`;
+        });
+      });
+    }
+    
+  </script>
+</body>
+</html>

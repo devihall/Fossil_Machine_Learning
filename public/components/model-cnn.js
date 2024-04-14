@@ -1,6 +1,7 @@
 export async function initModel(categories) {
   const options = {
-    task: 'classification',
+    inputs: [16, 16, 3],
+    task: 'imageClassification',
     debug: true
   };
 
