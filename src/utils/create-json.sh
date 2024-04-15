@@ -19,6 +19,12 @@ createDatasetJson() {
     cd "$baseDir"
 
     for categoryDir in */; do
+        # Skip directories that end with '_original'
+        if [[ "$categoryDir" == *_original/ ]]; then
+            echo "Skipping directory: $categoryDir"
+            continue
+        fi
+
         echo "Processing category: $categoryDir"
         if [[ -d "$categoryDir" ]]; then
             cd "$categoryDir"
@@ -26,8 +32,6 @@ createDatasetJson() {
             # Read filenames into an array, ensuring filenames with spaces are handled as a single entry
             IFS=$'\n' files=($(ls))
             unset IFS
-
-            # echo "Files found: ${files[*]}"
 
             local selectedFiles=()
 
@@ -40,10 +44,8 @@ createDatasetJson() {
             fi
 
             for file in "${selectedFiles[@]}"; do
-                # echo "Processing file: $file"
                 if [[ -f "$file" ]]; then
                     local filePath="images/dataSets/${lastFolderName}/${categoryDir%/}/${file}"
-                    # echo "Adding file to dataset: $filePath"
                     dataset+=("{\"image\": \"${filePath}\", \"category\": \"${categoryDir%/}\"}")
                 else
                     echo "File not found: $file"
@@ -53,7 +55,6 @@ createDatasetJson() {
             cd ..
         fi
     done
-
 
     echo "[" > "../$jsonFileName"
     echo "${dataset[*]}" | sed 's/} {/},\n{/g' >> "../$jsonFileName"
