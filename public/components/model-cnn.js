@@ -1,13 +1,15 @@
+const IMAGE_WIDTH = 128;
+const IMAGE_HEIGHT = 128;
+const IMAGE_CHANNELS = 4;
+
 export async function initModel(categories) {
-  const options = {
-    inputs: [16, 16, 3],
+ const options = {
+    inputs: [IMAGE_WIDTH, IMAGE_HEIGHT, IMAGE_CHANNELS],
     task: 'imageClassification',
-    debug: true
+    debug: true,
   };
 
-  const neuralNetwork = ml5.neuralNetwork(options, function () {
-    console.log("Model is ready");
-  });
+  const neuralNetwork = ml5.neuralNetwork(options);
 
   return neuralNetwork;
 }

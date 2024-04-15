@@ -65,72 +65,6 @@ import { loadCategories } from "./categories.js";
 //   });
 // }
 
-// function preprocessImage(imageElement, expectedHeight, expectedWidth) {
-//   let tensor = tf.browser.fromPixels(imageElement)  // Convert the image to a tensor
-//       .resizeNearestNeighbor([expectedHeight, expectedWidth])  // Resize the image
-//       .toFloat()
-//       .div(tf.scalar(255.0))  // Normalize the image
-//       .expandDims();  // Add a batch dimension
-
-//   return tensor;
-// }
-
-async function processBatch(data, myClassifier) {
-  const tensorLabelPairs = await Promise.all(data.map(async item => {
-      const blob = await loadImageFromUrl(item.image);
-      const tensor = await loadAndProcessImage(blob);
-      return { tensor, label: item.category };
-  }));
-
-  // After creating tensor-label pairs, add them to the classifier
-  tensorLabelPairs.forEach(pair => {
-      myClassifier.addData({ image: pair.tensor }, { label: pair.label });
-      pair.tensor.dispose(); // Dispose each tensor to free memory
-  });
-
-  return tensorLabelPairs.length; // Return the count of processed items
-}
-
-
-async function loadImageAndProcessToTensor(imageUrl) {
-  const blob = await loadImageFromUrl(imageUrl);
-  const tensor = await loadAndProcessImage(blob);
-  return tensor;
-}
-
-async function loadAndProcessImage(blob) {
-  return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-          const img = new Image();
-          img.onload = () => {
-              const canvas = document.createElement('canvas');
-              const ctx = canvas.getContext('2d');
-              canvas.width = img.width;
-              canvas.height = img.height;
-              ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-              const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-              try {
-                  const tensor = tf.browser.fromPixels(imageData).toFloat().div(tf.scalar(255.0));
-                  console.log('Tensor created:', tensor);
-                  resolve(tensor);
-              } catch (e) {
-                  console.error('Error creating tensor:', e);
-                  reject(e);
-              }
-          };
-          img.src = reader.result;
-      };
-      reader.onerror = error => {
-          console.error('File reading error:', error);
-          reject(error);
-      };
-      reader.readAsDataURL(blob);
-  });
-}
-
-
-
 export async function dataFeed() {
   loadCategories("json", 'dataset');
 
@@ -168,40 +102,40 @@ export async function loadImagesFromJson(data, myClassifier) {
   const thumbnailContainers = document.getElementsByClassName("thumbnailContainer");
   Array.from(thumbnailContainers).forEach(container => container.innerHTML = "");
 
-  // Process images and labels in batches
-  const count = await processBatch(data, myClassifier);
-  console.log(`${count} images loaded and processed.`);
-
   // Process each image
-  const imagePromises = data.map(async item => {
-      try {
-
+  const imagePromises = data.map(item => {
+      return new Promise((resolve, reject) => {
           const img = new Image();
-          img.width = 100;
-          img.height = 100;
-          img.onload = async () => {
+          img.width = 128;
+          img.height = 128;
+          img.src = item.image;
+          img.onload = () => {
               const thumbnailContainer = document.getElementById("thumbnailContainer" + item.category);
               if (!thumbnailContainer) {
-                  throw new Error(`No container for category: ${item.category}`);
+                  console.log(`No container for category: ${item.category}`);
+                  reject(new Error(`No container for category: ${item.category}`));
+                  return;
               }
+
               const thumbnailDiv = document.createElement("div");
               thumbnailDiv.classList.add("thumbnail");
               thumbnailDiv.appendChild(img);
               thumbnailContainer.appendChild(thumbnailDiv);
 
+              // Add image data to classifier for training
+              myClassifier.addData({image: img}, {label: item.category });
+              resolve();
           };
           img.onerror = () => {
-              throw new Error(`Failed to load image: ${item.image}`);
+              console.log(`Error loading image: ${item.image}`);
+              reject(new Error(`Failed to load image: ${item.image}`));
           };
-          img.src = item.image;
-      } catch (error) {
-          console.error(`Error processing image: ${item.image}`, error);
-      }
+      });
   });
 
   try {
       await Promise.all(imagePromises);
-      console.log("All images loaded and processed.");
+      console.log("All images loaded.");
       myClassifier.normalizeData(); // Normalize data after all images are loaded
       console.log("Data normalized.");
   } catch (error) {
@@ -211,16 +145,7 @@ export async function loadImagesFromJson(data, myClassifier) {
       spinner.style.display = "none";
   }
 }
-
-async function loadImageFromUrl(imageUrl) {
-  const response = await fetch(imageUrl);
-  if (!response.ok) throw new Error('Failed to fetch image');
-  const blob = await response.blob();
-  if (!blob) throw new Error('No image blob found');
-  return blob;
-}
-
-
+  
 
 
 

@@ -28,10 +28,13 @@ export async function classify(myClassifier) {
 
   // Clear the content of the result div
   element.empty();
-  const img = document.getElementById("image");
-
+  const item = document.getElementById("image");
+  const img = new Image();
+  img.width = 128;
+  img.height = 128;
+  img.src = item.src;
   // Ask Image Classifier to classify test image
-  myClassifier.classify(img, gotResult);
+  myClassifier.classify({ image: img }, gotResult);
 
   // Move the #result div below the "Choose Image" and "Classify" button
   const resultContainer = $(".buttonList");
