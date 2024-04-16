@@ -1,7 +1,31 @@
 import { lostDataVisualization } from "./performance.js";
 
 // Function to train model
-export async function trainModel(myClassifier) {
+export async function trainModelFE(myClassifier) {
+  // ask model to train with the new data
+  myClassifier
+    .train(whileTraining)
+    .then((results) => {
+      console.log("Training complete", results);
+      // const trainresults =  results;
+      // plotAccuracy(categories);
+
+      // Update the UI and visualize the training results
+      const trainingMessageContainer =
+        document.getElementById("trainingMessage");
+      trainingMessageContainer.innerHTML = `
+              <div class="alert alert-success" role="alert">
+                  Training complete! Check the Performance tab for how the model did.
+              </div>`;
+      
+      // Plot the loss data in the Performance tab
+      lostDataVisualization(results);
+
+
+    })
+  }
+
+export async function trainModelCNN(myClassifier) {
 
   const trainingOptions = {
     epochs: 20,
@@ -15,15 +39,16 @@ export async function trainModel(myClassifier) {
   // plotAccuracy(categories);
 
   // Update the UI and visualize the training results
-  const trainingMessageContainer =
-    document.getElementById("trainingMessage");
-  trainingMessageContainer.innerHTML = `
-          <div class="alert alert-success" role="alert">
-              Training complete! Check the Performance tab for how the model did.
-          </div>`;
 
   function finishedTraining() {
     console.log('finished training');
+    const trainingMessageContainer =
+    document.getElementById("trainingMessage");
+    trainingMessageContainer.innerHTML = `
+            <div class="alert alert-success" role="alert">
+                Training complete! Check the Performance tab for how the model did.
+            </div>`;
+
     return myClassifier;
     // method 1: you can pass in an object with a matching key and the p5 image
     // cnn.classify({ image: testA }, gotResults);

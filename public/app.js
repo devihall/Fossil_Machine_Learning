@@ -1,18 +1,23 @@
 import { openTab } from "./components/menuTabs.js"; 
 import { loadCategories } from "./components/categories.js";
 import { dataFeed } from "./components/dataSet.js";
-import { initModel, resetModel } from "./components/model.js";
-// import { initModel, resetModel } from "./components/model-cnn.js";
+import { initModelFE, initModelCNN, resetModel } from "./components/model.js";
 import { randomizeData } from "./components/dataSet.js";
-import { trainModel } from "./components/traning.js";
+import { trainModelFE, trainModelCNN } from "./components/traning.js";
 import { readURL, classify } from "./components/classification.js";
 
 let myClassifier;
 let trainingResults;
 let categories;
+let modelType = 'FE';
+
+if (modelType === 'CNN') {
+  console.log('Using CNN model');
+}
+
 
 // Menu tabs
-function handleTabs(tabName = 'datasets') {
+function handleTabs(tabName = 'training') {
   openTab(tabName);
 
   switch (tabName) {
@@ -29,8 +34,14 @@ function handleTabs(tabName = 'datasets') {
 }
 
 // Load the model
-async function loadModel(categories) {
-  myClassifier = await initModel(categories);
+async function loadModel(categories, modelType) {
+  console.log('Loading model', modelType);
+  if (modelType === 'FE') {
+    console.log('Using FE model');
+    myClassifier = await initModelFE(categories);
+  } else {
+    myClassifier = await initModelCNN();
+  }
   console.log('Model loaded');
 }
 
@@ -40,7 +51,7 @@ function handleRandFeed(num) {
     console.log('Classifier is not initialized yet.');
     return;
   }
-  randomizeData(num, myClassifier);
+  randomizeData(num, myClassifier, modelType);
 }
 
 // Train the model
@@ -49,7 +60,11 @@ function handleTraining() {
     console.log('Classifier is not initialized yet.');
     return;
   } 
-  trainingResults = trainModel(myClassifier);
+  if (modelType === 'FE') {
+    trainingResults = trainModelFE(myClassifier);
+  } else {
+    trainingResults = trainModelCNN(myClassifier);
+  }
 }
 
 // Handle reset button
@@ -69,11 +84,22 @@ export function handleClasification() {
     console.log('Classifier is not initialized yet.');
     return;
   }
-  classify(myClassifier);
+  classify(myClassifier, modelType);
+}
+
+function setupModelTypeChangeListener() {
+  const modelTypeSelector = document.getElementById('modelType');
+  modelTypeSelector.addEventListener('change', function() {
+    modelType = this.value;
+    resetModel(myClassifier, trainingResults);
+    console.log('Model type changed to:', modelType);
+    loadModel(categories, modelType);
+  });
 }
 
 handleTabs();
-loadModel(categories);
+loadModel(categories, modelType);
+setupModelTypeChangeListener();
 
 
 window.handleTabs = handleTabs;

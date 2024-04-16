@@ -1,4 +1,8 @@
-export function initModel(categories) {
+const IMAGE_WIDTH = 128;
+const IMAGE_HEIGHT = 128;
+const IMAGE_CHANNELS = 4;
+
+export function initModelFE(categories) {
   return new Promise((resolve, reject) => {
     // Initialize the MobileNet model
     const myfeatureExtractor = ml5.featureExtractor("MobileNet", modelReady);
@@ -6,12 +10,27 @@ export function initModel(categories) {
 
     // Function to handle model loading
     function modelReady() {
-      console.log("Model is ready");
+      console.log("Model FE is ready");
       resolve(myClassifier);
     }
 
   });
 }
+
+
+
+export async function initModelCNN() {
+ const options = {
+    inputs: [IMAGE_WIDTH, IMAGE_HEIGHT, IMAGE_CHANNELS],
+    task: 'imageClassification',
+    debug: true,
+  };
+
+  const neuralNetwork = ml5.neuralNetwork(options);
+
+  return neuralNetwork;
+}
+
 
 // function to reset the model
 export async function resetModel(myClassifier, trainingResults) {

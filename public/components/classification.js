@@ -18,7 +18,7 @@ export function readURL(input) {
 }
 
 // logic for image classification with retrained model
-export async function classify(myClassifier) {
+export async function classify(myClassifier, modelType) {
   console.log("classify button clicked");
   $("#classify").prop("disabled", true);
 
@@ -28,13 +28,21 @@ export async function classify(myClassifier) {
 
   // Clear the content of the result div
   element.empty();
-  const item = document.getElementById("image");
-  const img = new Image();
-  img.width = 128;
-  img.height = 128;
-  img.src = item.src;
-  // Ask Image Classifier to classify test image
-  myClassifier.classify({ image: img }, gotResult);
+  
+  if (modelType === 'FE') {
+    const img = document.getElementById("image");
+
+    // Ask Image Classifier to classify test image
+    myClassifier.classify(img, gotResult);
+  } else {
+    const item = document.getElementById("image");
+    const img = new Image();
+    img.width = 128;
+    img.height = 128;
+    img.src = item.src;
+    // Ask Image Classifier to classify test image
+    myClassifier.classify({ image: img }, gotResult);
+  }
 
   // Move the #result div below the "Choose Image" and "Classify" button
   const resultContainer = $(".buttonList");

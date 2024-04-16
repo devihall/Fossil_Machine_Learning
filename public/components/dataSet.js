@@ -72,19 +72,97 @@ export async function dataFeed() {
 }
 
 // loading newly created JSON file (that has images as property values)
-export async function loadData(filePath, myClassifier) {
+export async function loadData(filePath, myClassifier, modelType) {
   try {
     const response = await fetch(filePath);
     const jsonResponse = await response.json();
     console.log("JSON file loaded successfully");
-    await loadImagesFromJson(jsonResponse, myClassifier);
+    if (modelType === "FE") {
+      console.log("Loading images for FE model");
+      await loadImagesFromJsonFE(jsonResponse, myClassifier);
+    } else {
+      console.log("Loading images for CNN model");
+      await loadImagesFromJsonCNN(jsonResponse, myClassifier);
+    }
+
   } catch (error) {
     console.error("Error loading or parsing JSON:", error);
   }
 }
 
+export async function loadImagesFromJsonFE(data, myClassifier) {
+  const timeout = 10000; // Timeout in milliseconds, e.g., 10000 for 10 seconds
+  let timeoutId;
 
-export async function loadImagesFromJson(data, myClassifier) {
+  // Show the rectangle spinner
+  document.getElementById("rectangle-spinner").style.display = "flex";
+
+  // Start a timer to hide the spinner after the timeout period
+  timeoutId = setTimeout(() => {
+    console.log("Timeout reached, hiding spinner.");
+    document.getElementById("rectangle-spinner").style.display = "none";
+  }, timeout);
+
+  const thumbnailContainers = document.getElementsByClassName("thumbnailContainer");
+  Array.from(thumbnailContainers).forEach(
+    (container) => (container.innerHTML = "")
+  );
+
+  const imagePromises = [];
+
+  for (let item of data) {
+    const img = new Image();
+    img.width = 100;
+    img.height = 100;
+
+    img.src = item.image;
+
+    // load categories from json file into thumbnail containers
+    const thumbnailContainer = document.getElementById(
+      "thumbnailContainer" + item.category
+    );
+    if (!thumbnailContainer) {
+      console.log(
+        `There are no images with these categories: ${item.category}`
+      );
+      continue;
+    }
+
+    // Function to RANDOMLY add Thumbnails to UI
+    const imagePromise = new Promise((resolve, reject) => {
+      img.onload = () => {
+        const thumbnailDiv = document.createElement("div");
+        thumbnailDiv.classList.add("thumbnail");
+        thumbnailDiv.appendChild(img);
+        thumbnailContainer.appendChild(thumbnailDiv);
+        // console.log(`Adding ${item.image} to category ${item.category}`);
+
+        // add images to model for re-training
+        myClassifier.addImage(img, item.category).then(resolve);
+      };
+      console.log("<<<<USE THIS addImage>>>>");
+
+      img.onerror = () => {
+        console.log(`Error loading image: ${item.image}`);
+        reject(new Error(`Failed to load image: ${item.image}`));
+      };
+    });
+    imagePromises.push(imagePromise);
+  }
+
+  try {
+    await Promise.all(imagePromises);
+    console.log("All images loaded.");
+  } catch (error) {
+    console.log("An error occurred while loading images:", error);
+  } finally {
+    // Clear the timeout and hide the spinner
+    clearTimeout(timeoutId);
+    document.getElementById("rectangle-spinner").style.display = "none";
+  }
+}
+
+export async function loadImagesFromJsonCNN(data, myClassifier) {
   const timeout = 10000; // Timeout in milliseconds
   let timeoutId;
 
@@ -97,6 +175,8 @@ export async function loadImagesFromJson(data, myClassifier) {
       console.log("Timeout reached, hiding spinner.");
       spinner.style.display = "none";
   }, timeout);
+
+  console.log("Loading images from JSON data...");
 
   // Clear existing thumbnails
   const thumbnailContainers = document.getElementsByClassName("thumbnailContainer");
@@ -151,7 +231,7 @@ export async function loadImagesFromJson(data, myClassifier) {
 
   
 // function to create json file from the images(excutes the shell script)- excutes when number button is clicked
-export async function randomizeData(num, myClassifier) {
+export async function randomizeData(num, myClassifier, modelType) {
   if (!num) {
     console.error("Please enter a number");
     return;
@@ -169,7 +249,7 @@ export async function randomizeData(num, myClassifier) {
       console.log("Success:", data);
 
       // load the newly created json file
-      loadData("/images/dataSets/sharks.json", myClassifier);
+      loadData("/images/dataSets/sharks.json", myClassifier, modelType);
     })
     .catch((error) => {
       console.error("Error:", error);
