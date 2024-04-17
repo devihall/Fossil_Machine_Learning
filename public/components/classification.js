@@ -18,7 +18,7 @@ export function readURL(input) {
 }
 
 // logic for image classification with retrained model
-export async function classify(myClassifier, modelType) {
+export async function classify(myClassifier, modelType, width, height) {
   console.log("classify button clicked");
   $("#classify").prop("disabled", true);
 
@@ -37,8 +37,8 @@ export async function classify(myClassifier, modelType) {
   } else {
     const item = document.getElementById("image");
     const img = new Image();
-    img.width = 128;
-    img.height = 128;
+    img.width = width;
+    img.height = height;
     img.src = item.src;
     // Ask Image Classifier to classify test image
     myClassifier.classify({ image: img }, gotResult);

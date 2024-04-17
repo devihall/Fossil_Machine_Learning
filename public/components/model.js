@@ -1,6 +1,3 @@
-const IMAGE_WIDTH = 128;
-const IMAGE_HEIGHT = 128;
-const IMAGE_CHANNELS = 4;
 
 export function initModelFE(categories) {
   return new Promise((resolve, reject) => {
@@ -19,9 +16,9 @@ export function initModelFE(categories) {
 
 
 
-export async function initModelCNN() {
+export async function initModelCNN(width, height, channels) {
  const options = {
-    inputs: [IMAGE_WIDTH, IMAGE_HEIGHT, IMAGE_CHANNELS],
+    inputs: [width, height, channels],
     task: 'imageClassification',
     debug: true,
   };

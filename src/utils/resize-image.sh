@@ -2,7 +2,7 @@
 
 # Function to display help message
 show_help() {
-    echo "Usage: $0 <source_folder> <pixels>"
+    echo "Usage: $0 <source_folder> <width> <height>"
     echo
     echo "This script resizes all images in directories ending with '_original'"
     echo "within the source folder to the specified dimensions (e.g., 128x128)."
@@ -11,7 +11,8 @@ show_help() {
     echo
     echo "Arguments:"
     echo "  source_folder       The base folder containing the directories to process."
-    echo "  pixels              The dimensions to which images should be resized (e.g., 128)."
+    echo "  width               The width to which images should be resized."
+    echo "  height              The height to which images should be resized."
     echo
     echo "Options:"
     echo "  --help              Display this help message and exit."
@@ -23,16 +24,17 @@ if [[ "$1" == "--help" ]]; then
     exit 0
 fi
 
-# Check if two arguments are provided
-if [ "$#" -ne 2 ]; then
-    echo "Error: Two arguments are required."
+# Check if three arguments are provided
+if [ "$#" -ne 3 ]; then
+    echo "Error: Three arguments are required."
     show_help
     exit 1
 fi
 
 # Assign arguments to variables
-BASE_FOLDER=$1
-PIXELS=$2
+WIDTH=$1
+HEIGHT=$2
+BASE_FOLDER=$3
 
 # Check if the base folder exists
 if [ ! -d "$BASE_FOLDER" ]; then
@@ -51,8 +53,8 @@ for DIR in "$BASE_FOLDER"/*_original; do
         mkdir -p "$DEST_DIR"
 
         # Process all images in the directory
-        echo "Processing images in $DIR to $DEST_DIR at ${PIXELS}x${PIXELS}px"
-        node resize.js "$DIR" "$DEST_DIR" "$PIXELS"
+        echo "Processing images in $DIR to $DEST_DIR at ${WIDTH}x${HEIGHT}px"
+        node ./utils/resize.js "$DIR" "$DEST_DIR" "$WIDTH" "$HEIGHT"
     fi
 done
 

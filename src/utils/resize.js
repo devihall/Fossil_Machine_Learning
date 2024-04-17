@@ -2,19 +2,20 @@ import sharp from 'sharp';
 import fs from 'fs/promises';
 import path from 'path';
 
-const resizeImage = async (sourcePath, destinationPath, size) => {
+const resizeImage = async (sourcePath, destinationPath, width, height) => {
+    console.log(`Resizing ${path.basename(sourcePath)} to ${width}x${height}px`);
     try {
         await sharp(sourcePath)
-            .resize(parseInt(size), parseInt(size))
+            .resize(parseInt(width), parseInt(height))
             .withMetadata({ density: 72 }) // Set the DPI to 72
             .toFile(destinationPath);
-        console.log(`Resized ${path.basename(sourcePath)} to ${size}x${size}px`);
+        console.log(`Resized ${path.basename(sourcePath)} to ${width}x${height}px`);
     } catch (err) {
         console.error(`Error resizing file ${path.basename(sourcePath)}`, err);
     }
 };
 
-const processImages = async (source, destination, size) => {
+const processImages = async (source, destination, width, height) => {
     try {
         // Ensure destination directory exists
         await fs.mkdir(destination, { recursive: true });
@@ -26,7 +27,7 @@ const processImages = async (source, destination, size) => {
                 const destinationPath = path.join(destination, file);
 
                 console.log(`Processing ${sourcePath}`);
-                await resizeImage(sourcePath, destinationPath, size);
+                await resizeImage(sourcePath, destinationPath, width, height);
             } else {
                 console.log(`Skipping non-image file: ${file}`);
             }
@@ -36,10 +37,10 @@ const processImages = async (source, destination, size) => {
     }
 };
 
-const [source, destination, size] = process.argv.slice(2);
-if (!source || !destination || size === undefined) {
-    console.error("Usage: node resize.js <source_directory> <destination_directory> <size>");
+const [source, destination, width, height] = process.argv.slice(2);
+if (!source || !destination || !width || !height) {
+    console.error("Usage: node resize.js <source_directory> <destination_directory> <width> <height>");
     process.exit(1);
 }
 
-processImages(source, destination, size);
+processImages(source, destination, width, height);
