@@ -1,9 +1,13 @@
+import { loadCategories } from "./categories.js";
 
-export function initModelFE(categories) {
+export async function initModelFE() {
+  const categories = await loadCategories('json', 'training')
   return new Promise((resolve, reject) => {
+    
     // Initialize the MobileNet model
     const myfeatureExtractor = ml5.featureExtractor("MobileNet", modelReady);
-    let myClassifier = myfeatureExtractor.classification({ numLabels: categories.length });
+
+    let myClassifier = myfeatureExtractor.classification([], { numLabels: categories.length });
 
     // Function to handle model loading
     function modelReady() {

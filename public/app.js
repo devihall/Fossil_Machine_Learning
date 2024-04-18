@@ -38,11 +38,11 @@ function handleTabs(tabName = 'training') {
 }
 
 // Load the model
-async function loadModel(categories, modelType) {
+async function loadModel(modelType) {
   console.log('Loading model', modelType);
   if (modelType === 'FE') {
     console.log('Using FE model');
-    myClassifier = await initModelFE(categories);
+    myClassifier = await initModelFE();
   } else {
     myClassifier = await initModelCNN(width, height, channels);
   }
@@ -55,6 +55,7 @@ function handleRandFeed(num) {
     console.log('Classifier is not initialized yet.');
     return;
   }
+  
   randomizeData(num, myClassifier, modelType, width, height);
 }
 
@@ -97,7 +98,7 @@ function setupModelTypeChangeListener() {
     modelType = this.value;
     resetModel(myClassifier, trainingResults);
     console.log('Model type changed to:', modelType);
-    loadModel(categories, modelType);
+    loadModel(modelType);
   });
 }
 
@@ -204,7 +205,7 @@ function setResolutionDropdown(resolution) {
 
 fetchAllConfigData();
 handleTabs();
-loadModel(categories, modelType);
+loadModel(modelType);
 setupModelTypeChangeListener();
 
 
