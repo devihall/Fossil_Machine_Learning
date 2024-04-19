@@ -22,12 +22,19 @@ export async function initModelFE() {
 
 export async function initModelCNN(width, height, channels) {
  const options = {
-    inputs: [width, height, channels],
-    task: 'imageClassification',
-    debug: true,
-  };
+   inputs: [width, height, channels],
+   task: "imageClassification",
+   debug: true,
+ };
 
   const neuralNetwork = ml5.neuralNetwork(options);
+
+  const modelDetails = {
+    model: "model/model.json",
+    metadata: "model/model_meta.json",
+    weights: "model/weights.bin",
+  };
+  neuralNetwork.load(modelDetails);
 
   return neuralNetwork;
 }

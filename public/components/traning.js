@@ -30,10 +30,11 @@ export async function trainModelCNN(myClassifier) {
   const trainingOptions = {
     epochs: 20,
     batchSize: 12,
+    validationSplit: 0.2,
   };
-
+  
   const results = await myClassifier.train(trainingOptions, whileTraining, finishedTraining);
-  console.log("Training complete", results);
+  console.log("Training complete", trainingOptions);
 
   // const trainresults =  results;
   // plotAccuracy(categories);
