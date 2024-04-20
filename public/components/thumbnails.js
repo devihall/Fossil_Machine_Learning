@@ -1,5 +1,5 @@
 // loading image data from newly created JSON file
-export async function loadImagesFromJson() {
+export async function loadImagesFromJson(width, height) {
   const timeout = 10000; // Timeout in milliseconds, e.g., 10000 for 10 seconds
   let timeoutId;
 
@@ -24,8 +24,8 @@ export async function loadImagesFromJson() {
 
   for (let item of jsonResponse) {
     const img = new Image();
-    img.width = 100;
-    img.height = 100;
+    img.width = width;
+    img.height = height;
 
     img.src = item.image;
 

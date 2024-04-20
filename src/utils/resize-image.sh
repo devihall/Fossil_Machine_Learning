@@ -2,14 +2,17 @@
 
 # Function to display help message
 show_help() {
-    echo "Usage: $0 <source_folder> <destination_folder>"
+    echo "Usage: $0 <source_folder> <width> <height>"
     echo
-    echo "This script resizes all images in the source folder"
-    echo "and saves the resized images to the destination folder."
+    echo "This script resizes all images in directories ending with '_original'"
+    echo "within the source folder to the specified dimensions (e.g., 128x128)."
+    echo "The resized images are saved in a corresponding directory with the"
+    echo "'_original' suffix removed."
     echo
     echo "Arguments:"
-    echo "  source_folder       The folder containing the images to resize."
-    echo "  destination_folder  The folder where the resized images will be saved."
+    echo "  source_folder       The base folder containing the directories to process."
+    echo "  width               The width to which images should be resized."
+    echo "  height              The height to which images should be resized."
     echo
     echo "Options:"
     echo "  --help              Display this help message and exit."
@@ -21,36 +24,38 @@ if [[ "$1" == "--help" ]]; then
     exit 0
 fi
 
-# Check if two arguments are provided
-if [ "$#" -ne 2 ]; then
-    echo "Error: Two arguments are required."
+# Check if three arguments are provided
+if [ "$#" -ne 3 ]; then
+    echo "Error: Three arguments are required."
     show_help
     exit 1
 fi
 
 # Assign arguments to variables
-SOURCE_FOLDER=$1
-DESTINATION_FOLDER=$2
+WIDTH=$1
+HEIGHT=$2
+BASE_FOLDER=$3
 
-# Check if the source folder exists
-if [ ! -d "$SOURCE_FOLDER" ]; then
-    echo "Error: Source folder '$SOURCE_FOLDER' does not exist."
+# Check if the base folder exists
+if [ ! -d "$BASE_FOLDER" ]; then
+    echo "Error: Base folder '$BASE_FOLDER' does not exist."
     exit 1
 fi
 
-# Create the destination folder if it doesn't exist
-mkdir -p "$DESTINATION_FOLDER"
+# Process each directory that ends with '_original'
+for DIR in "$BASE_FOLDER"/*_original; do
+    if [ -d "$DIR" ]; then
+        # Compute destination directory by removing '_original' suffix
+        DEST_DIR="${DIR%_original}"
 
-# Loop through all the images in the source folder
-for IMAGE in "$SOURCE_FOLDER"/*.{jpg,jpeg,png,gif}; do
-    # Check if the file is an image
-    if [ -f "$IMAGE" ]; then
-        # Get the base name of the image file
-        FILENAME=$(basename "$IMAGE")
-        # Resize the image and save it in the destination folder
-        node resize.js "$SOURCE_FOLDER" "$DESTINATION_FOLDER"
+        # Remove and recreate destination directory
+        rm -rf "$DEST_DIR"
+        mkdir -p "$DEST_DIR"
+
+        # Process all images in the directory
+        echo "Processing images in $DIR to $DEST_DIR at ${WIDTH}x${HEIGHT}px"
+        node ./utils/resize.js "$DIR" "$DEST_DIR" "$WIDTH" "$HEIGHT"
     fi
 done
 
 echo "Image resizing completed."
-

@@ -1,7 +1,7 @@
 import { lostDataVisualization } from "./performance.js";
 
 // Function to train model
-export async function trainModel(myClassifier) {
+export async function trainModelFE(myClassifier) {
   // ask model to train with the new data
   myClassifier
     .train(whileTraining)
@@ -25,11 +25,56 @@ export async function trainModel(myClassifier) {
     })
   }
 
+export async function trainModelCNN(myClassifier) {
+
+  const trainingOptions = {
+    epochs: 20,
+    batchSize: 12,
+    validationSplit: 0.2,
+  };
+  
+  const results = await myClassifier.train(trainingOptions, whileTraining, finishedTraining);
+  console.log("Training complete", trainingOptions);
+
+  // const trainresults =  results;
+  // plotAccuracy(categories);
+
+  // Update the UI and visualize the training results
+
+  function finishedTraining() {
+    console.log('finished training');
+    const trainingMessageContainer =
+    document.getElementById("trainingMessage");
+    trainingMessageContainer.innerHTML = `
+            <div class="alert alert-success" role="alert">
+                Training complete! Check the Performance tab for how the model did.
+            </div>`;
+
+    return myClassifier;
+    // method 1: you can pass in an object with a matching key and the p5 image
+    // cnn.classify({ image: testA }, gotResults);
+  }
+  
+  // Plot the loss data in the Performance tab
+
+  function gotResults(err, results) {
+    if (err) {
+      console.log(err);
+      return;
+    }
+    lostDataVisualization(results);
+    console.log('results', results);
+    const percent = 100 * results[0].confidence;
+    createP(`${results[0].label} ${nf(percent, 2, 1)}%`);
+  }
+
+}
+
 // function to call when model is training
 export async function whileTraining(epoch, loss) {
   console.log("model is training");
   //////
-  // console.log(`Epoch: ${epoch}, Loss: ${loss}`);
+  console.log(`Epoch: ${epoch}, Loss: ${loss}`);
   //// Calculate accuracy (this is just a placeholder, replace it with actual accuracy calculation)
   const accuracy = 1 - loss;
   let accuracyData = [];

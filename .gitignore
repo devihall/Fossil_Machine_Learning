@@ -1,2 +1,4 @@
-/images/fossil
+dataSets/
+/public/images/dataSets/
 /node_modules
+.DS_Store
