@@ -11,7 +11,7 @@ const readFileAsync = promisify(fs.readFile);
 // Params
 const WIDTH = 512;
 const HEIGHT = 512;
-const BATCH_SIZE = 8; // 32 for 244x244; 10 for 320x320;
+const BATCH_SIZE = 32; // 32 for 244x244; 10 for 320x320;
 const VALIDATION_SPLIT = 0.2;
 
 let model = null;
