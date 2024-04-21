@@ -8,6 +8,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const readFileAsync = promisify(fs.readFile);
 
+// Params
+const WIDTH = 512;
+const HEIGHT = 512;
+const BATCH_SIZE = 8; // 32 for 244x244; 10 for 320x320;
+const VALIDATION_SPLIT = 0.2;
+
 let model = null;
 
 const CLASS_NAMES = [
@@ -21,10 +27,10 @@ const CLASS_NAMES = [
 
 async function loadAndProcessImage(imagePath) {
   const imageBuffer = await readFileAsync(imagePath);
-  const tfImage = tf.node.decodeImage(imageBuffer, 3); // Correctly defining tfImage here
-  const resizedImage = tf.image.resizeBilinear(tfImage, [224, 224]); // Use the defined tfImage
-  const normalizedImage = resizedImage.div(255.0); // Normalizing the resized image
-  return normalizedImage; // Return the normalized image directly
+  const tfImage = tf.node.decodeImage(imageBuffer, 4); 
+  const resizedImage = tf.image.resizeBilinear(tfImage, [WIDTH, HEIGHT]); 
+  const normalizedImage = resizedImage.div(255.0); 
+  return normalizedImage; 
 }
 
 async function loadTrainingData() {
@@ -47,7 +53,7 @@ async function loadTrainingData() {
 function defineModel() {
     model = tf.sequential();
     model.add(tf.layers.conv2d({
-        inputShape: [224, 224, 3],
+        inputShape: [WIDTH, HEIGHT, 4],
         filters: 32,
         kernelSize: 3,
         activation: 'relu'
@@ -81,8 +87,8 @@ async function loadAndTrain() {
     const model = defineModel();
     await model.fit(xs, ys, {
         epochs: 20,
-        batchSize: 32,
-        validationSplit: 0.2
+        batchSize: BATCH_SIZE,
+        validationSplit: VALIDATION_SPLIT
     });
     console.log('Model trained successfully!');
 }
@@ -103,7 +109,11 @@ async function classifyNewImage(imagePath) {
 
 
 async function main() {
+  console.log('Starting the entire process...');
+  const processStartTime = Date.now(); // Capture the start time of the whole process
+
   await loadAndTrain();
+
   console.log('>>> Test Galeocerdo Cuvier image <<<');
   await classifyNewImage('images/dataSets/sharks/galeocerdo_cuvier/VP UF-TRO8935 lingual copy.png');
   console.log('');
@@ -117,12 +127,16 @@ async function main() {
   await classifyNewImage('images/dataSets/sharks/carcharhinus_leucas/VP UF64381E lingual copy.png');
   console.log('');
   console.log('>>> Test Otodus Megalodon image <<<');
-  await classifyNewImage('images/dataSets/sharks/otodus_megalodon/VP UF-TRO4486 lingual copy.png');
+  await classifyNewImage('images/dataSets/sharks/otodus_megalodon/VP UF-TRO10740 lingual copy.png');
   console.log('');
   console.log('>>> Test Isurus Hastalis image <<<');
   await classifyNewImage('images/dataSets/sharks/isurus_hastalis/VP UF-TRO7321 lingual copy.png');
 
+  const processEndTime = Date.now(); // Capture the end time of the whole process
+  const totalProcessDuration = (processEndTime - processStartTime) / 1000; // Convert to seconds
+  console.log(`Total process completed in ${totalProcessDuration} seconds!`);
 }
+
 
 
 main().catch(console.error);
