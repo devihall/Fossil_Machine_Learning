@@ -107,7 +107,18 @@ async function classifyNewImage(imagePath) {
 
 async function main() {
   await loadAndTrain();
-  await classifyNewImage('images/dataSets/tests/carcharhinus_leucas1.png');
+  console.log('Test Galeocerdo Cuvier image');
+  await classifyNewImage('images/dataSets/sharks/galeocerdo_cuvier/VP UF-TRO8935 lingual copy.png');
+  console.log('Test Carcharodon Carcharias image');
+  await classifyNewImage('images/dataSets/sharks/carcharodon_carcharias/VP UF-TRO2367 lingual copy.png');
+  console.log('Test Hemipristis Serra image');
+  await classifyNewImage('images/dataSets/sharks/hemipristis_serra/VP UF-TRO 7575 lingual copy.png');
+  console.log('Test Carcharhinus Leucas image');
+  await classifyNewImage('images/dataSets/sharks/carcharhinus_leucas/VP UF64381E lingual copy.png');
+  console.log('Test Otodus Megalodon image');
+  await classifyNewImage('images/dataSets/sharks/otodus_megalodon/VP UF-TRO4486 lingual copy.png');
+  console.log('Test Isurus Hastalis image');
+  await classifyNewImage('images/dataSets/sharks/isurus_hastalis/VP UF-TRO7321 lingual copy.png');
 
 }
 
