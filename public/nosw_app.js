@@ -1,39 +1,29 @@
-import tf from '@tensorflow/tfjs-node';
+import * as tf from '@tensorflow/tfjs-node';
+import * as mobilenet from '@tensorflow-models/mobilenet';
 import fs from 'fs';
 import { promisify } from 'util';
 import path from 'path';
 import { fileURLToPath } from 'url';
-let model, mobilenet;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const readFileAsync = promisify(fs.readFile);
 
-// Constants for model
 const MOBILE_NET_INPUT_WIDTH = 224;
 const MOBILE_NET_INPUT_HEIGHT = 224;
 const CLASS_NAMES = [
-    'carcharhinus_leucas',
-    'carcharodon_carcharias', 
-    'galeocerdo_cuvier',
-    'hemipristis_serra',
-    'isurus_hastalis',
-    'otodus_megalodon'
+    'carcharhinus_leucas', 'carcharodon_carcharias', 'galeocerdo_cuvier',
+    'hemipristis_serra', 'isurus_hastalis', 'otodus_megalodon'
 ];
 
+let model, featureExtractor;
 
-// Load the MobileNet model and warm it up
+
 async function loadMobileNetFeatureModel() {
-  const URL = 'https://www.kaggle.com/models/google/mobilenet-v3/TfJs/large-075-224-classification/1';
-  mobilenet = await tf.loadGraphModel(URL, {fromTFHub: true});
-  console.log('MobileNet v3 loaded successfully!');
-  
-  // Warm up the model
-  tf.tidy(() => {
-    const warmupResult = mobilenet.predict(tf.zeros([1, MOBILE_NET_INPUT_HEIGHT, MOBILE_NET_INPUT_WIDTH, 3]));
-    console.log('Warm-up result shape:', warmupResult.shape);
-  });
+  featureExtractor = await mobilenet.load({ version: 2, alpha: 0.75 });
+  featureExtractor.trainable = true;
+  console.log('MobileNet model loaded successfully!');
 }
 
 async function loadAndProcessImage(imagePath) {
@@ -52,36 +42,35 @@ async function loadTrainingData() {
   for (const item of data) {
     const imagePath = path.join(__dirname, item.image);
     const image = await loadAndProcessImage(imagePath);
-    const featureVector = mobilenet.predict(image);  // Extract features using MobileNet
+    const featureVector = featureExtractor.infer(image);
     imageFeatureVectors.push(featureVector);
     labels.push(CLASS_NAMES.indexOf(item.category));
   }
 
-  const xs = tf.concat(imageFeatureVectors); // Concatenate all feature vectors
+  const xs = tf.concat(imageFeatureVectors);
   const ys = tf.oneHot(tf.tensor1d(labels, 'int32'), CLASS_NAMES.length);
-
   return { xs, ys };
 }
 
-// Main function to load model and train
+// Main training function and model architecture
 async function loadAndTrain() {
   await loadMobileNetFeatureModel();
 
   model = tf.sequential();
-  model.add(tf.layers.dense({ inputShape: [1001], units: 256, activation: 'relu' }));
-  // model.add(tf.layers.dropout(0.5));  
+  model.add(tf.layers.dense({ inputShape: [1000], units: 256, activation: 'relu' })); // Adjusted input shape to [1000]
   model.add(tf.layers.dense({ units: 128, activation: 'relu' }));
   model.add(tf.layers.dense({ units: CLASS_NAMES.length, activation: 'softmax' }));
+  
   model.summary();
 
+  const optimizer = tf.train.adam(0.0001); // Lower learning rate
   model.compile({
-    optimizer: 'adam',
+    optimizer: optimizer,
     loss: 'categoricalCrossentropy',
     metrics: ['accuracy']
   });
 
   const { xs, ys } = await loadTrainingData();
-
   await model.fit(xs, ys, {
     epochs: 20,
     callbacks: {
@@ -90,13 +79,11 @@ async function loadAndTrain() {
   });
 }
 
-
 async function classifyNewImage(imagePath) {
   const processedImage = await loadAndProcessImage(imagePath);
-  const featureVector = mobilenet.predict(processedImage);
+  const featureVector = featureExtractor.infer(processedImage);
   const predictions = model.predict(featureVector).softmax().dataSync();
-
-  // Create a detailed prediction result with probabilities for each class
+  
   const results = CLASS_NAMES.map((className, index) => ({
     className,
     probability: predictions[index]
@@ -105,6 +92,22 @@ async function classifyNewImage(imagePath) {
 
   return results;
 }
+
+
+// async function classifyNewImage(imagePath) {
+//   const processedImage = await loadAndProcessImage(imagePath);
+//   const featureVector = mobilenet.predict(processedImage);
+//   const predictions = model.predict(featureVector).softmax().dataSync();
+
+//   // Create a detailed prediction result with probabilities for each class
+//   const results = CLASS_NAMES.map((className, index) => ({
+//     className,
+//     probability: predictions[index]
+//   }));
+//   results.forEach(result => console.log(`${result.className}: ${result.probability.toFixed(4)}`));
+
+//   return results;
+// }
 
 
 async function main() {
@@ -126,4 +129,3 @@ async function main() {
 
 
 main().catch(console.error);
-
