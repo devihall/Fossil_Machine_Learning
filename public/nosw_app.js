@@ -25,7 +25,7 @@ const CLASS_NAMES = [
 
 // Load the MobileNet model and warm it up
 async function loadMobileNetFeatureModel() {
-  const URL = 'https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v3_small_100_224/feature_vector/5/default/1';
+  const URL = 'https://www.kaggle.com/models/google/mobilenet-v3/TfJs/large-075-224-classification/1';
   mobilenet = await tf.loadGraphModel(URL, {fromTFHub: true});
   console.log('MobileNet v3 loaded successfully!');
   
@@ -67,8 +67,10 @@ async function loadTrainingData() {
 async function loadAndTrain() {
   await loadMobileNetFeatureModel();
 
-  model = tf.sequential(); // Initialize model in the higher scope
-  model.add(tf.layers.dense({ inputShape: [1024], units: 128, activation: 'relu' }));
+  model = tf.sequential();
+  model.add(tf.layers.dense({ inputShape: [1001], units: 256, activation: 'relu' }));
+  // model.add(tf.layers.dropout(0.5));  
+  model.add(tf.layers.dense({ units: 128, activation: 'relu' }));
   model.add(tf.layers.dense({ units: CLASS_NAMES.length, activation: 'softmax' }));
   model.summary();
 
