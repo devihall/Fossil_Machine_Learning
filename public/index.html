@@ -15,34 +15,16 @@
 </head>
 <body>
 <div id="rectangle-spinner" class="rectangle-spinner" style="display: none;">
-    <p>Loading images to the model...</p>
+    <p class="spinner-message"></p>
 </div>
 <div class="tab-navigation">
-  <button class="tab-button" onclick="handleTabs('datasets')">Dataset</button>
   <button class="tab-button" onclick="handleTabs('training')">Training</button>
   <button class="tab-button" onclick="handleTabs('classification')">Classification</button>
   <button class="tab-button" onclick="handleTabs('performance')">Performance</button>
+  <button class="tab-button" onclick="handleTabs('datasets')">Dataset</button>
 </div>
 
-<!-- content for Model DataSets Tab -->
-<div id="datasets" class="tab active">
-  <h2>Dataset</h2>
-  <div class="d-flex justify-content-between align-items-center">
-    <p>Upload training images</p>
-  </div>
-  
 
-    
-  <div id="" class="tabcontent mt-3">
-    <div id="dataMessage"></div>
-    <div id="categories" style="display: block;">
-      <div id="datasetCategoriesContainer"  class="container row mt-4">
-        <!-- Categories load here -->
-      </div>
-    </div>
-</div>
-
-</div>
 
 <!-- content for Model Training Tab -->
 <div id="training" class="tab">
@@ -50,6 +32,10 @@
   <div class="d-flex justify-content-between align-items-center">
     <p>Upload training images</p>
     <div>
+      <select class="btn btn-secondary mr-5 py-2" id="modelType"> 
+        <option value="FE">FE</option>
+        <option value="NN">NN</option>
+      </select>
       <button class="btn btn-warning mr-4" onclick="handleReset()">
           Reset
       </button>
@@ -58,17 +44,16 @@
       </button>
     </div>
   </div>
-  
-
     
   <div id="home" class="tabcontent mt-3">
     <div id="trainingMessage"></div>
     <button class="btn btn-success" onclick="handleRandFeed(5)">5</button>
-    <button class="btn btn-success" onclick="handleRandFeed(10)">10</button>
+    <button class="btn btn-success" onclick="handleRandFeed(15)">15</button>
     <button class="btn btn-success" onclick="handleRandFeed(25)">25</button>
+    <button class="btn btn-success" onclick="handleRandFeed(35)">35</button>
     <button class="btn btn-success" onclick="handleRandFeed(50)">50</button>
-
-    <button class="btn btn-light border border-secondary" onclick="loadManually()">Add Images</button>
+    <button class="btn btn-success" onclick="handleRandFeed(75)">75</button>
+    <button class="btn btn-success" onclick="handleRandFeed(125)">125</button>
     
     <div id="categories" style="display: block;">
       <div id="trainingCategoriesContainer"  class="container row mt-4">
@@ -111,6 +96,41 @@
   <p>Model performance visualization.</p>
   <h5>Learning Loss Graph</h5>
 <div id="demo"></div>
+
+</div>
+
+<!-- content for Model DataSets Tab -->
+<div id="datasets" class="tab active">
+  <h2>Dataset</h2>
+  <div class="d-flex justify-content-between align-items-center">
+    <p>Upload training images</p>
+      <div>
+        <select class="btn btn-secondary mr-5 py-2" id="resolution"> 
+          <option value="60x60">60x60</option>
+          <option value="100x100">100x100</option>
+          <option value="128x128">128x128</option>
+          <option value="256x256">256x256</option>
+          <option value="320x240">320x240</option>
+          <option value="480x360">480x360</option>
+          <option value="640x480">640x480</option>
+        </select>
+        <button class="btn btn-primary" onclick="handleImageResolution()">
+          Resize Images
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+    
+  <div id="" class="tabcontent mt-3">
+    <div id="dataMessage"></div>
+    <div id="categories" style="display: block;">
+      <!-- <div id="datasetCategoriesContainer"  class="container row mt-4"> -->
+        <!-- Categories load here -->
+      <!-- </div> -->
+    </div>
+  </div>
 
 </div>
 

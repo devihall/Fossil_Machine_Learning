@@ -1,7 +1,7 @@
 
 
 //Function to handle Loading categories from categories JSON
-export async function loadCategories(inputType, tab = "datasets") {
+export async function loadCategories(inputType, tab) {
   // Fetch and parse the categories.json file
   const response = await fetch("categories.json");
   const categories = await response.json();
