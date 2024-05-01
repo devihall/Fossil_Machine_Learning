@@ -146,6 +146,8 @@ async function loadJsonFile(filePath) {
 }
 
 const imagePromise = new Promise((resolve, reject) => {
+  if (!img) { return };
+
   img.onload = () => {
       const thumbnailDiv = document.createElement("div");
       thumbnailDiv.classList.add("thumbnail");
@@ -296,41 +298,71 @@ async function handleFileInput(inputId) {
   });
 }
 
+
+async function loadValidationData() {
+  const response = await fetch('./validationData.json');
+  const validationData = await response.json();
+  return validationData;
+}
+
 async function trainModel() {
   console.log("Starting training...");
 
-  myClassifier.train(whileTraining)
-      .then((results) => {
-          console.log("Training complete", results);
+  let results = await myClassifier.train(whileTraining)
 
-          // Update the UI and visualize the training results
-          const trainingMessageContainer = document.getElementById("trainingMessage");
-          trainingMessageContainer.innerHTML = `
-              <div class="alert alert-success" role="alert">
-                  Training complete! Check the Performance tab for how the model did.
-              </div>`;
+  const validationData = await loadValidationData();
 
-          const lossDataForVisualization = results.epoch.map((epochValue, index) => ({
-              x: epochValue,
-              y: results.history.loss[index]
-          }));
+  ///// Dr. Porto - Validation Data //////
+  let correctPredictions = 0;
+  for (let {image, category} of validationData) {
 
-          const data = {
-              values: [lossDataForVisualization],
-              series: ["Loss vs Epoch"]
-          };
+    const img = new Image();
+    img.width = 100; 
+    img.height = 100; 
+    img.src = image;
 
-          const container = document.getElementById("demo");
-          const options = {
-              xLabel: "Epoch",
-              yLabel: "Loss"
-          };
-          tfvis.render.linechart(container, data, options);
-      })
-      .catch((error) => {
-          console.error("Error during training:", error);
-      });
+    const results = await myClassifier.classify(img);
+    // console.log("results", results);
+
+    if (results[0].label === category) {
+      console.log("results[0].label", results[0].label);
+      correctPredictions++;
+    }
+  }
+
+  // Calculate accuracy
+  console.log("correctPredictions", correctPredictions, " / validationData Length", validationData.length);
+
+  const accuracy = correctPredictions / validationData.length;
+  console.log( `Validation Accuracy: ${accuracy}`);
+
+  console.log("Training complete", results);
+
+  // Update the UI and visualize the training results
+  const trainingMessageContainer = document.getElementById("trainingMessage");
+  trainingMessageContainer.innerHTML = `
+  <div class="alert alert-success" role="alert">
+      Training complete! Check the Performance tab for how the model did.
+  </div>`;
+
+      const lossDataForVisualization = results.epoch.map((epochValue, index) => ({
+          x: epochValue,
+          y: results.history.loss[index]
+      }));
+
+      const data = {
+          values: [lossDataForVisualization],
+          series: ["Loss vs Epoch"]
+      };
+
+      const container = document.getElementById("demo");
+      const options = {
+          xLabel: "Epoch",
+          yLabel: "Loss"
+      };
+      tfvis.render.linechart(container, data, options);
 }
+
 
 
 

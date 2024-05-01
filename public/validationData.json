@@ -1,0 +1,13 @@
+[
+{"image": "/images/dataSets/validationData/carcharhinus_leucas/VP UF64381B lngual copy.png", "category": "carcharhinus_leucas"},
+{"image": "/images/dataSets/validationData/carcharhinus_leucas/VP UF64381D lingual copy.png", "category": "carcharhinus_leucas"},
+{"image": "/images/dataSets/validationData/carcharodon_carcharias/VP UF-TRO2366 lingual copy.png", "category": "carcharodon_carcharias"},
+{"image": "/images/dataSets/validationData/carcharodon_carcharias/VP UF-TRO2367 lingual copy.png", "category": "carcharodon_carcharias"},
+{"image": "/images/dataSets/validationData/galeocerdo_cuvier/VP UF-TRO8045 lingual copy.png", "category": "galeocerdo_cuvier"},
+{"image": "/images/dataSets/validationData/hemipristis_serra/VP UF 229824 lingual copy.png", "category": "hemipristis_serra"},
+{"image": "/images/dataSets/validationData/hemipristis_serra/VP UF-TRO 7540 lingual copy.png", "category": "hemipristis_serra"},
+{"image": "/images/dataSets/validationData/isurus_hastalis/VP UF-TRO3913 lingual copy.png", "category": "isurus_hastalis"},
+{"image": "/images/dataSets/validationData/isurus_hastalis/VP UF-TRO5637 lingual copy.png", "category": "isurus_hastalis"},
+{"image": "/images/dataSets/validationData/otodus_megalodon/VP GS1381 lingual copy.png", "category": "otodus_megalodon"},
+{"image": "/images/dataSets/validationData/otodus_megalodon/VP UF-TRO2735 lingual copy.png", "category": "otodus_megalodon"}
+]
