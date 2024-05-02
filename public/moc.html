@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confusion Matrix Visualization with tfjs-vis</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-vis"></script>
+</head>
+<body>
+    <div id="confusion-matrix"></div>
+    <script>
+        // Function to plot confusion matrix using tfjs-vis
+        async function plotConfusionMatrix() {
+            // Dummy true labels and predictions
+            const trueLabels = [2, 0, 2, 2, 0, 1, 1, 2, 2, 0];
+            const predictions = [2, 0, 2, 1, 0, 2, 1, 0, 2, 0];
+
+            // Convert arrays to tensors
+            const labelsTensor = tf.tensor1d(trueLabels, 'int32');
+            const predictionsTensor = tf.tensor1d(predictions, 'int32');
+
+            // Calculate the confusion matrix
+            const confMatrix = await tf.math.confusionMatrix(labelsTensor, predictionsTensor, 3);
+
+            // Use tfjs-vis to render the confusion matrix
+            const surface = { name: 'Confusion Matrix', tab: 'Charts' };
+            tfvis.render.confusionMatrix(surface, { values: confMatrix.arraySync() });
+        }
+
+        plotConfusionMatrix(); // Call the function to plot the matrix
+    </script>
+</body>
+</html>

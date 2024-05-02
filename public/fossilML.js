@@ -49,6 +49,8 @@ console.log("myimages", myimages);
 // Function to handle model loading
 function modelReady() {
   console.log("Model is ready");
+  console.log('TF TENSOR 1D', tf.tensor1d([1, 2, 3, 4]))
+
 }
 
 // Load categories
