@@ -153,7 +153,7 @@ const imagePromise = new Promise((resolve, reject) => {
   img.onload = () => {
       const thumbnailDiv = document.createElement("div");
       thumbnailDiv.classList.add("thumbnail");
-      thumbnailDiv.appendChild(img);
+      thumbnailDiv.appendChild(thumb);
       thumbnailContainer.appendChild(thumbnailDiv);
 
       console.log(`Adding ${item.image} to category ${item.category}`);
@@ -186,11 +186,17 @@ async function loadImagesFromJson() {
   const imagePromises = [];
 
   for (let item of jsonResponse) {
-      const img = new Image();
-      img.width = 100;
-      img.height = 100;
 
+      const thumb = new Image();
+      thumb.width = 100;
+      thumb.height = 100;
+      thumb.src = item.image;
+
+      const img = new Image();
+      img.width = 224;
+      img.height = 224;
       img.src = item.image;
+
       const thumbnailContainer = document.getElementById("thumbnailContainer" + item.category);
       if (!thumbnailContainer) {
           console.log(`There are no images with these categories: ${item.category}`);
@@ -201,7 +207,7 @@ async function loadImagesFromJson() {
           img.onload = () => {
               const thumbnailDiv = document.createElement("div");
               thumbnailDiv.classList.add("thumbnail");
-              thumbnailDiv.appendChild(img);
+              thumbnailDiv.appendChild(thumb);
               thumbnailContainer.appendChild(thumbnailDiv);
 
               console.log(`Adding ${item.image} to category ${item.category}`);
@@ -308,6 +314,7 @@ async function loadValidationData() {
 }
 
 async function trainModel() {
+  console.log(">>>>>>  myClassifier <<<<<<<", myClassifier);
   console.log("Starting training...");
 
   let results = await myClassifier.train(whileTraining)
@@ -319,9 +326,14 @@ async function trainModel() {
   for (let {image, category} of validationData) {
 
     const img = new Image();
-    img.width = 100; 
-    img.height = 100; 
+    img.width = 224; 
+    img.height = 224; 
     img.src = image;
+
+    const thumb = new Image();
+    thumb.width = 100; 
+    thumb.height = 100; 
+    thumb.src = image;
 
     const results = await myClassifier.classify(img);
     // console.log("results", results);
