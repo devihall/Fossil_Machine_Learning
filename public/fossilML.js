@@ -273,16 +273,21 @@ async function handleFileInput(inputId) {
     const file = input.files[i];
 
     // Create a new image element
-    const img = document.createElement("img");
-    img.width = 100; // Set width for display purposes
-    img.height = 100; // Set height for display purposes
+    const thumb = document.createElement("img");
+    thumb.width = 100; 
+    thumb.height = 100;
 
-    img.src = URL.createObjectURL(file);
+    thumb.src = URL.createObjectURL(file);
     console.log("FILE", file);
+
+    const img = new Image();
+    img.width = 224;
+    img.height = 224;
+    img.src =  URL.createObjectURL(file);
 
     const thumbnailDiv = document.createElement("div");
     thumbnailDiv.classList.add("thumbnail");
-    thumbnailDiv.appendChild(img);
+    thumbnailDiv.appendChild(thumb);
     thumbnailContainer.appendChild(thumbnailDiv);
 
     // add uploaded images to myimages array
